@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-// Tela final do formulário, exibindo um resumo ou mensagem de conclusão
 class FormScreen5 extends StatelessWidget {
   const FormScreen5({super.key});
 
@@ -8,8 +7,18 @@ class FormScreen5 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Resumo')),
-      body: const Center(
-        child: Text('Formulário finalizado!'),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('Formulário finalizado!'),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Voltar'),
+            ),
+          ],
+        ),
       ),
     );
   }
