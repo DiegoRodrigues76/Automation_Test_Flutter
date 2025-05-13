@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:reactive_forms/reactive_forms.dart';
-import 'form_screen2.dart';
 
 class FormScreen1 extends StatelessWidget {
-  const FormScreen1({super.key});
+  final form = FormGroup({
+    'name': FormControl<String>(validators: [Validators.required], asyncValidatorsDebounceTime: 500),
+    'email': FormControl<String>(validators: [Validators.required, Validators.email], asyncValidatorsDebounceTime: 500),
+    'phone': FormControl<String>(validators: [Validators.required], asyncValidatorsDebounceTime: 500),
+  });
+
+  FormScreen1({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final FormGroup form = FormGroup({
-      'name': FormControl<String>(validators: [Validators.required]),
-      'email': FormControl<String>(
-        validators: [Validators.required, Validators.email],
-      ),
-    });
-
     return Scaffold(
-      appBar: AppBar(title: const Text('Formulário 1')),
+      appBar: AppBar(title: Text('Formulário 1')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ReactiveForm(
@@ -24,36 +22,38 @@ class FormScreen1 extends StatelessWidget {
             children: [
               ReactiveTextField<String>(
                 formControlName: 'name',
-                decoration: const InputDecoration(labelText: 'Nome'),
-                keyboardType: TextInputType.text,
+                decoration: InputDecoration(labelText: 'Nome'),
+                validationMessages: {
+                  ValidationMessage.required: (_) => 'Por favor, insira seu nome.',
+                },
               ),
               ReactiveTextField<String>(
                 formControlName: 'email',
-                decoration: const InputDecoration(labelText: 'Email'),
+                decoration: InputDecoration(labelText: 'E-mail'),
                 keyboardType: TextInputType.emailAddress,
+                validationMessages: {
+                  ValidationMessage.required: (_) => 'Por favor, insira seu e-mail.',
+                  ValidationMessage.email: (_) => 'Por favor, insira um e-mail válido.',
+                },
               ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Voltar'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (form.valid) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const FormScreen2(),
-                          ),
-                        );
-                      }
-                    },
-                    child: const Text('Próximo'),
-                  ),
-                ],
+              ReactiveTextField<String>(
+                formControlName: 'phone',
+                decoration: InputDecoration(labelText: 'Telefone'),
+                keyboardType: TextInputType.phone,
+                validationMessages: {
+                  ValidationMessage.required: (_) => 'Por favor, insira seu telefone.',
+                },
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  if (form.valid) {
+                    Navigator.pushNamed(context, '/form2');
+                  } else {
+                    form.markAllAsTouched(); // Mostra as mensagens de erro
+                  }
+                },
+                child: Text('Próximo'),
               ),
             ],
           ),
