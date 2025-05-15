@@ -23,7 +23,7 @@ class FormScreen5 extends StatelessWidget {
     final paymentMethod = args['paymentMethod'];
     final cardNumber = args['cardNumber'];
     final cardExpiry = args['cardExpiry'];
-    final cardCVV = args['cardCVV'];
+    final cardType = args ['cardType'];
 
     return Scaffold(
       appBar: AppBar(
@@ -44,7 +44,7 @@ class FormScreen5 extends StatelessWidget {
               SizedBox(height: 10),
               Text('Número do Cartão: ${cardNumber ?? "Não informado"}'),
               Text('Validade: ${cardExpiry ?? "Não informado"}'),
-              Text('CVV: ${cardCVV ?? "Não informado"}'),
+              Text('Tipo do Cartão: ${cardType ?? "Não informado"}'),
             ] else if (paymentMethod == 'pix') ...[
               SizedBox(height: 10),
               Text('Código Pix: ${pixCode ?? "Não informado"}'),

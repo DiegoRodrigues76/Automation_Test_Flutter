@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:dropdown_search/dropdown_search.dart';
-import 'package:automation_test_flutter/services/api_service.dart'; // Importando o ApiService
+import 'package:automation_test_flutter/services/api_service.dart';
 
 class FormScreen2 extends StatefulWidget {
   const FormScreen2({super.key});
@@ -20,38 +20,24 @@ class _FormScreen2State extends State<FormScreen2> {
     'state': FormControl<String>(validators: [Validators.required]),
   });
 
-  bool _isAddressFound = false; // Variável de controle de visibilidade
+  bool _isAddressFound = false;
 
-  // Função que verifica o CEP e busca o endereço
   Future<void> _fetchAddress() async {
     final cep = form.control('cep').value;
-
-    // Verifica se o CEP está vazio ou incompleto
     if (cep == null || cep.isEmpty || cep.length < 8) {
-      setState(() {
-        _isAddressFound = false; // Esconde os campos de endereço
-      });
-      return; // Se o CEP for inválido ou incompleto, sai da função
+      setState(() => _isAddressFound = false);
+      return;
     }
 
-    // Caso o CEP esteja completo, tenta buscar o endereço
     final address = await ApiService.fetchAddress(cep);
-
     if (address != null) {
-      setState(() {
-        _isAddressFound = true; // Avisa que o endereço foi encontrado
-      });
-
-      // Preenche os campos com os dados retornados pela API
+      setState(() => _isAddressFound = true);
       form.control('street').value = address['logradouro'];
       form.control('neighborhood').value = address['bairro'];
       form.control('city').value = address['localidade'];
       form.control('state').value = address['uf'];
     } else {
-      setState(() {
-        _isAddressFound = false; // Se não encontrar, esconde os campos
-      });
-
+      setState(() => _isAddressFound = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('CEP inválido!'), backgroundColor: Colors.red),
       );
@@ -59,7 +45,7 @@ class _FormScreen2State extends State<FormScreen2> {
   }
 
   Future<List<String>> _fetchCountries() async {
-    final countries = await ApiService.fetchCountries(); // Usando a API do service
+    final countries = await ApiService.fetchCountries();
     return countries;
   }
 
@@ -73,50 +59,36 @@ class _FormScreen2State extends State<FormScreen2> {
           formGroup: form,
           child: Column(
             children: [
-              // Campo de seleção de País
-              FutureBuilder<List<String>>(
-                future: _fetchCountries(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text('Erro ao carregar países');
-                  } else if (snapshot.hasData) {
-                    return DropdownSearch<String>(
-                      items: snapshot.data!,
-                      selectedItem: form.control('country').value,
-                      onChanged: (value) {
-                        form.control('country').value = value;
-                      },
-                      dropdownDecoratorProps: DropDownDecoratorProps(
-                        dropdownSearchDecoration: InputDecoration(
-                          labelText: 'Nacionalidade',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    );
-                  } else {
-                    return Text('Nenhum país disponível');
-                  }
+              // Campo de seleção de País com DropdownSearch atualizado
+              DropdownSearch<String>(
+                asyncItems: (String filter) => _fetchCountries(),
+                selectedItem: form.control('country').value,
+                onChanged: (value) {
+                  form.control('country').value = value;
                 },
+                dropdownDecoratorProps: DropDownDecoratorProps(
+                  dropdownSearchDecoration: InputDecoration(
+                    labelText: 'Nacionalidade',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
               ),
+
+              SizedBox(height: 16),
 
               // Campo CEP
               ReactiveTextField<String>(
                 formControlName: 'cep',
                 decoration: InputDecoration(labelText: 'CEP'),
                 keyboardType: TextInputType.number,
-                onChanged: (value) {
-                  _fetchAddress(); // Chama a função de busca ao alterar o valor
-                },
+                onChanged: (value) => _fetchAddress(),
                 validationMessages: {
                   ValidationMessage.required: (_) => 'Por favor, insira o CEP.',
                 },
               ),
 
-              // Apenas mostra os campos de endereço se o endereço for encontrado
               if (_isAddressFound) ...[
-                // Campos de endereço
+                SizedBox(height: 16),
                 ReactiveTextField<String>(
                   formControlName: 'street',
                   decoration: InputDecoration(labelText: 'Rua'),

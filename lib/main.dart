@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'screens/form_screen1.dart';
 import 'screens/form_screen2.dart';
 import 'screens/form_screen3.dart';
@@ -20,6 +21,15 @@ class FormApp extends StatelessWidget {
         primarySwatch: Colors.indigo,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+      locale: Locale('pt', 'BR'),
+      localizationsDelegates: const[
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const[
+        Locale('pt', 'BR'),
+      ],
       initialRoute: '/',
       onGenerateRoute: (settings) {
         switch (settings.name) {

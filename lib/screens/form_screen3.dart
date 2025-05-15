@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:reactive_forms/reactive_forms.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
 class FormScreen3 extends StatefulWidget {
@@ -15,6 +16,8 @@ class _FormScreen3State extends State<FormScreen3> {
   @override
   void initState() {
     super.initState();
+    initializeDateFormatting('pt_BR', null); // Inicializa o locale
+
     form = FormGroup({
       'paymentMethod': FormControl<String>(
         validators: [Validators.required],
@@ -75,7 +78,7 @@ class _FormScreen3State extends State<FormScreen3> {
                       title: const Text('Data de Envio'),
                       subtitle: Text(
                         field.value != null
-                            ? DateFormat('dd/MM/yyyy').format(field.value!)
+                            ? DateFormat('dd/MM/yyyy', 'pt_BR').format(field.value!)
                             : 'Escolha a data',
                       ),
                       onTap: () async {
@@ -84,6 +87,7 @@ class _FormScreen3State extends State<FormScreen3> {
                           initialDate: DateTime.now(),
                           firstDate: DateTime.now(),
                           lastDate: DateTime(2100),
+                          locale: const Locale('pt', 'BR'),
                         );
                         if (selectedDate != null) {
                           field.didChange(selectedDate);
