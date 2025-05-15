@@ -27,9 +27,27 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final List countries = jsonDecode(response.body);
-      return countries.map((country) => country['name']['common'] as String).toList()..sort();
+
+      // Pega o nome traduzido para português, se disponível, senão o nome comum
+      final List<String> translatedCountries = countries.map<String>((country) {
+        try {
+          return country['translations']['por']['common'] as String;
+        } catch (_) {
+          return country['name']['common'] as String;
+        }
+      }).toList();
+
+      translatedCountries.sort((a, b) => a.compareTo(b));
+      return translatedCountries;
     } else {
       throw Exception('Falha ao carregar países');
     }
   }
 }
+
+//       return countries.map((country) => country['name']['common'] as String).toList()..sort();
+//     } else {
+//       throw Exception('Falha ao carregar países');
+//     }
+//   }
+// }
