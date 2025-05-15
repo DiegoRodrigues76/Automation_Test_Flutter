@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:automation_test_flutter/constants/constants.dart';
 
 class FormScreen3 extends StatefulWidget {
   const FormScreen3({super.key});
@@ -16,29 +17,20 @@ class _FormScreen3State extends State<FormScreen3> {
   @override
   void initState() {
     super.initState();
-    initializeDateFormatting('pt_BR', null); // Inicializa o locale
+    initializeDateFormatting('pt_BR', null);
 
     form = FormGroup({
-      'paymentMethod': FormControl<String>(
-        validators: [Validators.required],
-      ),
-      'deliveryDate': FormControl<DateTime>(
-        validators: [Validators.required],
-      ),
+      'paymentMethod': FormControl<String>(validators: [Validators.required]),
+      'deliveryDate': FormControl<DateTime>(validators: [Validators.required]),
       'receiveEmails': FormControl<bool>(value: false),
-      'agreeToTerms': FormControl<bool>(
-        value: false,
-        validators: [Validators.requiredTrue],
-      ),
+      'agreeToTerms': FormControl<bool>(value: false, validators: [Validators.requiredTrue]),
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Formulário 3'),
-      ),
+      appBar: AppBar(title: const Text('Formulário 3')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ReactiveForm(
@@ -46,29 +38,24 @@ class _FormScreen3State extends State<FormScreen3> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Forma de Pagamento
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ReactiveDropdownField<String>(
                     formControlName: 'paymentMethod',
-                    decoration: const InputDecoration(
-                      labelText: 'Forma de pagamento',
-                    ),
+                    decoration: const InputDecoration(labelText: 'Forma de pagamento'),
                     items: const [
-                      DropdownMenuItem(value: 'pix', child: Text('Pix')),
-                      DropdownMenuItem(value: 'card', child: Text('Cartão de Crédito/Débito')),
-                      DropdownMenuItem(value: 'boleto', child: Text('Boleto')),
+                      DropdownMenuItem(value: pix, child: Text('Pix')),
+                      DropdownMenuItem(value: card, child: Text('Cartão de Crédito/Débito')),
+                      DropdownMenuItem(value: boleto, child: Text('Boleto')),
                     ],
                     validationMessages: {
-                      ValidationMessage.required: (_) => 'Por favor, escolha a forma de pagamento.',
-                },
+                      ValidationMessage.required: (_) => requiredField,
+                    },
                   ),
                 ],
               ),
               const SizedBox(height: 20),
-
-              // Data de Envio
               ReactiveFormField<DateTime, DateTime>(
                 formControlName: 'deliveryDate',
                 builder: (field) => Column(
@@ -94,7 +81,6 @@ class _FormScreen3State extends State<FormScreen3> {
                         }
                       },
                     ),
-                    // Mensagem de erro
                     if (field.control.invalid && field.control.touched)
                       const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -107,8 +93,6 @@ class _FormScreen3State extends State<FormScreen3> {
                 ),
               ),
               const SizedBox(height: 20),
-
-              // Termos
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -116,7 +100,6 @@ class _FormScreen3State extends State<FormScreen3> {
                     formControlName: 'agreeToTerms',
                     title: const Text('Li e concordo com os termos e condições'),
                   ),
-                  // Mensagem de erro
                   Builder(
                     builder: (context) {
                       final control = form.control('agreeToTerms');
@@ -128,23 +111,18 @@ class _FormScreen3State extends State<FormScreen3> {
                             style: TextStyle(color: Colors.red),
                           ),
                         );
-                      } else {
-                        return const SizedBox.shrink();
                       }
+                      return const SizedBox.shrink();
                     },
                   ),
                 ],
               ),
               const SizedBox(height: 20),
-
-              // Receber e-mails
               ReactiveCheckboxListTile(
                 formControlName: 'receiveEmails',
                 title: const Text('Gostaria de receber propagandas por e-mail'),
               ),
               const SizedBox(height: 40),
-
-              // Botões
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -162,7 +140,7 @@ class _FormScreen3State extends State<FormScreen3> {
                           arguments: {'paymentMethod': paymentMethod},
                         );
                       } else {
-                        form.markAllAsTouched(); // Marca todos os campos como tocados para exibir os erros
+                        form.markAllAsTouched();
                       }
                     },
                     child: const Text('Avançar para Pagamento'),

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'screens/form_screen1.dart';
-import 'screens/form_screen2.dart';
-import 'screens/form_screen3.dart';
-import 'screens/form_screen4.dart';
-import 'screens/form_screen5.dart';
+import 'package:automation_test_flutter/screens/form_screen1.dart';
+import 'package:automation_test_flutter/screens/form_screen2.dart';
+import 'package:automation_test_flutter/screens/form_screen3.dart';
+import 'package:automation_test_flutter/screens/form_screen4.dart';
+import 'package:automation_test_flutter/screens/form_screen5.dart';
+import 'package:automation_test_flutter/screens/payment_completed_screen.dart';
 
 void main() {
-  runApp(FormApp());
+  runApp(const FormApp());
 }
 
 class FormApp extends StatelessWidget {
@@ -21,24 +22,22 @@ class FormApp extends StatelessWidget {
         primarySwatch: Colors.indigo,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      locale: Locale('pt', 'BR'),
-      localizationsDelegates: const[
+      locale: const Locale('pt', 'BR'),
+      localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const[
-        Locale('pt', 'BR'),
-      ],
+      supportedLocales: const [Locale('pt', 'BR')],
       initialRoute: '/',
       onGenerateRoute: (settings) {
         switch (settings.name) {
           case '/':
             return MaterialPageRoute(builder: (_) => FormScreen1());
           case '/form2':
-            return MaterialPageRoute(builder: (_) => FormScreen2());
+            return MaterialPageRoute(builder: (_) => const FormScreen2());
           case '/form3':
-            return MaterialPageRoute(builder: (_) => FormScreen3());
+            return MaterialPageRoute(builder: (_) => const FormScreen3());
           case '/form4':
             final args = settings.arguments as Map<String, dynamic>;
             return MaterialPageRoute(
@@ -50,9 +49,11 @@ class FormApp extends StatelessWidget {
               builder: (_) => FormScreen5(paymentData: args),
               settings: settings,
             );
+          case '/paymentCompleted':
+            return MaterialPageRoute(builder: (_) => const PaymentCompletedScreen());
           default:
             return MaterialPageRoute(
-              builder: (_) => Scaffold(
+              builder: (_) => const Scaffold(
                 body: Center(child: Text('Rota não encontrada')),
               ),
             );

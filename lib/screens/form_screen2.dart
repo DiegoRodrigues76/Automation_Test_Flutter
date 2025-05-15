@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:automation_test_flutter/services/api_service.dart';
+import 'package:automation_test_flutter/constants/constants.dart';
+import 'package:automation_test_flutter/widgets/form_fields.dart';
 
 class FormScreen2 extends StatefulWidget {
   const FormScreen2({super.key});
@@ -39,7 +41,7 @@ class _FormScreen2State extends State<FormScreen2> {
     } else {
       setState(() => _isAddressFound = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('CEP inválido!'), backgroundColor: Colors.red),
+        const SnackBar(content: Text('CEP inválido!'), backgroundColor: Colors.red),
       );
     }
   }
@@ -52,66 +54,60 @@ class _FormScreen2State extends State<FormScreen2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Formulário 2')),
+      appBar: AppBar(title: const Text('Formulário 2')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ReactiveForm(
           formGroup: form,
           child: Column(
             children: [
-              // Campo de seleção de País com DropdownSearch atualizado
               DropdownSearch<String>(
                 asyncItems: (String filter) => _fetchCountries(),
                 selectedItem: form.control('country').value,
                 onChanged: (value) {
                   form.control('country').value = value;
                 },
-                dropdownDecoratorProps: DropDownDecoratorProps(
+                dropdownDecoratorProps: const DropDownDecoratorProps(
                   dropdownSearchDecoration: InputDecoration(
                     labelText: 'Nacionalidade',
                     border: OutlineInputBorder(),
                   ),
                 ),
               ),
-
-              SizedBox(height: 16),
-
-              // Campo CEP
-              ReactiveTextField<String>(
+              const SizedBox(height: 16),
+              CustomReactiveTextField(
                 formControlName: 'cep',
-                decoration: InputDecoration(labelText: 'CEP'),
+                label: 'CEP',
                 keyboardType: TextInputType.number,
                 onChanged: (value) => _fetchAddress(),
                 validationMessages: {
-                  ValidationMessage.required: (_) => 'Por favor, insira o CEP.',
+                  ValidationMessage.required: (_) => requiredField,
                 },
               ),
-
               if (_isAddressFound) ...[
-                SizedBox(height: 16),
-                ReactiveTextField<String>(
+                const SizedBox(height: 16),
+                CustomReactiveTextField(
                   formControlName: 'street',
-                  decoration: InputDecoration(labelText: 'Rua'),
+                  label: 'Rua',
                   readOnly: true,
                 ),
-                ReactiveTextField<String>(
+                CustomReactiveTextField(
                   formControlName: 'neighborhood',
-                  decoration: InputDecoration(labelText: 'Bairro'),
+                  label: 'Bairro',
                   readOnly: true,
                 ),
-                ReactiveTextField<String>(
+                CustomReactiveTextField(
                   formControlName: 'city',
-                  decoration: InputDecoration(labelText: 'Cidade'),
+                  label: 'Cidade',
                   readOnly: true,
                 ),
-                ReactiveTextField<String>(
+                CustomReactiveTextField(
                   formControlName: 'state',
-                  decoration: InputDecoration(labelText: 'Estado'),
+                  label: 'Estado',
                   readOnly: true,
                 ),
               ],
-
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   if (form.valid) {
@@ -120,7 +116,7 @@ class _FormScreen2State extends State<FormScreen2> {
                     form.markAllAsTouched();
                   }
                 },
-                child: Text('Próximo'),
+                child: const Text('Próximo'),
               ),
             ],
           ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:reactive_forms/reactive_forms.dart';
+import 'package:automation_test_flutter/constants/constants.dart';
+import 'package:automation_test_flutter/widgets/form_fields.dart';
 
 class FormScreen1 extends StatelessWidget {
   final form = FormGroup({
@@ -13,47 +15,47 @@ class FormScreen1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Formulário 1')),
+      appBar: AppBar(title: const Text('Formulário 1')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ReactiveForm(
           formGroup: form,
           child: Column(
             children: [
-              ReactiveTextField<String>(
+              CustomReactiveTextField(
                 formControlName: 'name',
-                decoration: InputDecoration(labelText: 'Nome'),
+                label: 'Nome',
                 validationMessages: {
-                  ValidationMessage.required: (_) => 'Por favor, insira seu nome.',
+                  ValidationMessage.required: (_) => requiredField,
                 },
               ),
-              ReactiveTextField<String>(
+              CustomReactiveTextField(
                 formControlName: 'email',
-                decoration: InputDecoration(labelText: 'E-mail'),
+                label: 'E-mail',
                 keyboardType: TextInputType.emailAddress,
                 validationMessages: {
-                  ValidationMessage.required: (_) => 'Por favor, insira seu e-mail.',
-                  ValidationMessage.email: (_) => 'Por favor, insira um e-mail válido.',
+                  ValidationMessage.required: (_) => requiredField,
+                  ValidationMessage.email: (_) => invalidEmail,
                 },
               ),
-              ReactiveTextField<String>(
+              CustomReactiveTextField(
                 formControlName: 'phone',
-                decoration: InputDecoration(labelText: 'Telefone'),
+                label: 'Telefone',
                 keyboardType: TextInputType.phone,
                 validationMessages: {
-                  ValidationMessage.required: (_) => 'Por favor, insira seu telefone.',
+                  ValidationMessage.required: (_) => requiredField,
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   if (form.valid) {
                     Navigator.pushNamed(context, '/form2');
                   } else {
-                    form.markAllAsTouched(); // Mostra as mensagens de erro
+                    form.markAllAsTouched();
                   }
                 },
-                child: Text('Próximo'),
+                child: const Text('Próximo'),
               ),
             ],
           ),

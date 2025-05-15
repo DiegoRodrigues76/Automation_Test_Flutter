@@ -6,6 +6,7 @@ import 'package:barcode_widget/barcode_widget.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:intl/intl.dart';
 import 'package:automation_test_flutter/constants/constants.dart';
+import 'package:automation_test_flutter/widgets/form_fields.dart';
 
 class FormScreen4 extends StatelessWidget {
   final String paymentMethod;
@@ -27,13 +28,9 @@ class FormScreen4 extends StatelessWidget {
     return FormGroup({
       'paymentMethod': FormControl<String>(value: paymentMethod),
       'cardType': FormControl<String>(validators: [Validators.required]),
-      'cardNumber': FormControl<String>(
-        validators: [Validators.required, Validators.minLength(16)],
-      ),
+      'cardNumber': FormControl<String>(validators: [Validators.required, Validators.minLength(16)]),
       'cardExpiry': FormControl<DateTime>(validators: [Validators.required]),
-      'cardCVV': FormControl<String>(
-        validators: [Validators.required, Validators.minLength(3)],
-      ),
+      'cardCVV': FormControl<String>(validators: [Validators.required, Validators.minLength(3)]),
     });
   }
 
@@ -41,7 +38,7 @@ class FormScreen4 extends StatelessWidget {
   Widget build(BuildContext context) {
     final form = createForm();
 
-    form.valueChanges.debounceTime(Duration(milliseconds: 500)).listen((value) {
+    form.valueChanges.debounceTime(const Duration(milliseconds: 500)).listen((value) {
       debugPrint("📝 Form alterado: $value");
     });
 
@@ -49,9 +46,7 @@ class FormScreen4 extends StatelessWidget {
     final String boletoCode = _generateBoletoCode();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Formulário 4 - Pagamento'),
-      ),
+      appBar: AppBar(title: const Text('Formulário 4 - Pagamento')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ReactiveForm(
@@ -60,76 +55,83 @@ class FormScreen4 extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Método de pagamento: $paymentMethod'),
-              SizedBox(height: 20),
-
+              const SizedBox(height: 20),
               if (paymentMethod == card) ...[
-                Text('Detalhes do Cartão'),
-                ReactiveTextField<String>(
+                const Text('Detalhes do Cartão'),
+                CustomReactiveTextField(
                   formControlName: 'cardNumber',
-                  decoration: InputDecoration(labelText: 'Número do Cartão'),
+                  label: 'Número do Cartão',
                   keyboardType: TextInputType.number,
                   validationMessages: {
-                    ValidationMessage.required: (_) => 'Insira o número do cartão.',
-                    ValidationMessage.minLength: (_) => 'O cartão deve conter 16 dígitos.',
+                    ValidationMessage.required: (_) => requiredField,
+                    ValidationMessage.minLength: (_) => cardNumberMinLength,
                   },
                 ),
-
                 ReactiveFormField<DateTime, DateTime>(
                   formControlName: 'cardExpiry',
                   builder: (ReactiveFormFieldState<DateTime, DateTime> field) {
                     return GestureDetector(
                       onTap: () async {
                         final now = DateTime.now();
-                        int selectedMonth = now.month;
-                        int selectedYear = now.year;
 
                         final picked = await showDialog<DateTime>(
                           context: context,
                           builder: (context) {
-                            return AlertDialog(
-                              content: Row(
-                                children: [
-                                  Expanded(
-                                    child: DropdownButton<int>(
-                                      value: selectedMonth,
-                                      onChanged: (value) {
-                                        if (value != null) selectedMonth = value;
-                                      },
-                                      items: List.generate(12, (index) {
-                                        final month = index + 1;
-                                        return DropdownMenuItem(
-                                          value: month,
-                                          child: Text(month.toString().padLeft(2, '0')),
-                                        );
-                                      }),
-                                    ),
+                            int selectedMonth = now.month;
+                            int selectedYear = now.year;
+
+                            return StatefulBuilder(
+                              builder: (context, setState) {
+                                return AlertDialog(
+                                  content: Row(
+                                    children: [
+                                      Expanded(
+                                        child: DropdownButton<int>(
+                                          value: selectedMonth,
+                                          onChanged: (value) {
+                                            if (value != null) {
+                                              setState(() => selectedMonth = value);
+                                            }
+                                          },
+                                          items: List.generate(12, (index) {
+                                            final month = index + 1;
+                                            return DropdownMenuItem(
+                                              value: month,
+                                              child: Text(month.toString().padLeft(2, '0')),
+                                            );
+                                          }),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 16),
+                                      Expanded(
+                                        child: DropdownButton<int>(
+                                          value: selectedYear,
+                                          onChanged: (value) {
+                                            if (value != null) {
+                                              setState(() => selectedYear = value);
+                                            }
+                                          },
+                                          items: List.generate(10, (index) {
+                                            final year = now.year + index;
+                                            return DropdownMenuItem(
+                                              value: year,
+                                              child: Text(year.toString()),
+                                            );
+                                          }),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  SizedBox(width: 16),
-                                  Expanded(
-                                    child: DropdownButton<int>(
-                                      value: selectedYear,
-                                      onChanged: (value) {
-                                        if (value != null) selectedYear = value;
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop(DateTime(selectedYear, selectedMonth));
                                       },
-                                      items: List.generate(10, (index) {
-                                        final year = now.year + index;
-                                        return DropdownMenuItem(
-                                          value: year,
-                                          child: Text(year.toString()),
-                                        );
-                                      }),
+                                      child: const Text('OK'),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop(DateTime(selectedYear, selectedMonth));
-                                  },
-                                  child: Text('OK'),
-                                ),
-                              ],
+                                  ],
+                                );
+                              },
                             );
                           },
                         );
@@ -142,7 +144,7 @@ class FormScreen4 extends StatelessWidget {
                         decoration: InputDecoration(
                           labelText: 'Validade do Cartão',
                           errorText: field.errorText,
-                          contentPadding: EdgeInsets.symmetric(vertical: 16),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 16),
                         ),
                         isEmpty: field.value == null,
                         child: Text(
@@ -158,29 +160,28 @@ class FormScreen4 extends StatelessWidget {
                     );
                   },
                   validationMessages: {
-                    ValidationMessage.required: (_) => 'Insira a validade do cartão.',
+                    ValidationMessage.required: (_) => cardExpiryRequired,
                   },
                 ),
-
-                ReactiveTextField<String>(
+                CustomReactiveTextField(
                   formControlName: 'cardCVV',
-                  decoration: InputDecoration(labelText: 'CVV'),
-                  obscureText: true,
+                  label: 'CVV',
                   keyboardType: TextInputType.number,
+                  obscureText: true,
                   validationMessages: {
-                    ValidationMessage.required: (_) => 'Insira o código CVV.',
-                    ValidationMessage.minLength: (_) => 'O CVV deve conter pelo menos 3 dígitos.',
+                    ValidationMessage.required: (_) => requiredField,
+                    ValidationMessage.minLength: (_) => cardCVVMinLength,
                   },
                 ),
                 ReactiveDropdownField<String>(
                   formControlName: 'cardType',
-                  decoration: InputDecoration(labelText: 'Tipo de Cartão'),
+                  decoration: const InputDecoration(labelText: 'Tipo de Cartão'),
                   items: const [
                     DropdownMenuItem(value: 'Crédito', child: Text('Crédito')),
                     DropdownMenuItem(value: 'Débito', child: Text('Débito')),
                   ],
                   validationMessages: {
-                    ValidationMessage.required: (_) => 'Selecione uma das opções.',
+                    ValidationMessage.required: (_) => cardTypeRequired,
                   },
                 ),
               ] else if (paymentMethod == pix) ...[
@@ -200,8 +201,7 @@ class FormScreen4 extends StatelessWidget {
                   ),
                 ),
               ],
-
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Center(
                 child: ElevatedButton(
                   onPressed: () {
@@ -224,7 +224,7 @@ class FormScreen4 extends StatelessWidget {
                       form.markAllAsTouched();
                     }
                   },
-                  child: Text('Confirmar Pagamento'),
+                  child: const Text('Confirmar Pagamento'),
                 ),
               ),
             ],
