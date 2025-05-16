@@ -1,3 +1,4 @@
+import 'package:automation_test_flutter/modules/common/components/button_component.dart';
 import 'package:flutter/material.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:dropdown_search/dropdown_search.dart';
@@ -15,7 +16,10 @@ class FormScreen2 extends StatefulWidget {
 class _FormScreen2State extends State<FormScreen2> {
   final form = FormGroup({
     'country': FormControl<String>(validators: [Validators.required]),
-    'cep': FormControl<String>(validators: [Validators.required], asyncValidatorsDebounceTime: 500),
+    'cep': FormControl<String>(
+      validators: [Validators.required],
+      asyncValidatorsDebounceTime: 500,
+    ),
     'street': FormControl<String>(validators: [Validators.required]),
     'neighborhood': FormControl<String>(validators: [Validators.required]),
     'city': FormControl<String>(validators: [Validators.required]),
@@ -41,7 +45,10 @@ class _FormScreen2State extends State<FormScreen2> {
     } else {
       setState(() => _isAddressFound = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('CEP inválido!'), backgroundColor: Colors.red),
+        const SnackBar(
+          content: Text('CEP inválido!'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -90,33 +97,57 @@ class _FormScreen2State extends State<FormScreen2> {
                   formControlName: 'street',
                   label: 'Rua',
                   readOnly: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Rua',
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(vertical: 8),
+                  ),
                 ),
+                const SizedBox(height: 8),
                 CustomReactiveTextField(
                   formControlName: 'neighborhood',
                   label: 'Bairro',
                   readOnly: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Bairro',
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(vertical: 8),
+                  ),
                 ),
+                const SizedBox(height: 8),
                 CustomReactiveTextField(
                   formControlName: 'city',
                   label: 'Cidade',
                   readOnly: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Cidade',
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(vertical: 8),
+                  ),
                 ),
+                const SizedBox(height: 8),
                 CustomReactiveTextField(
                   formControlName: 'state',
                   label: 'Estado',
                   readOnly: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Estado',
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(vertical: 8),
+                  ),
                 ),
               ],
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
+              ZemaButtonComponent(
+                label: 'Próximo',
+                buttonName: 'proximo_form2',
+                action: () {
                   if (form.valid) {
                     Navigator.pushNamed(context, '/form3');
                   } else {
                     form.markAllAsTouched();
                   }
                 },
-                child: const Text('Próximo'),
               ),
             ],
           ),

@@ -1,3 +1,4 @@
+import 'package:automation_test_flutter/modules/common/components/button_component.dart';
 import 'package:flutter/material.dart';
 import 'package:automation_test_flutter/constants/constants.dart';
 
@@ -49,11 +50,12 @@ class FormScreen5 extends StatelessWidget {
             ],
             const SizedBox(height: 40),
             Center(
-              child: ElevatedButton(
-                onPressed: () {
+              child: ZemaButtonComponent(
+                label: 'Confirmar Pagamento',
+                buttonName: 'proximo_form5',
+                action: () {
                   Navigator.pushNamed(context, '/paymentCompleted');
                 },
-                child: const Text('Confirmar Pagamento'),
               ),
             ),
           ],

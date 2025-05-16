@@ -1,3 +1,5 @@
+import 'package:automation_test_flutter/modules/common/components/button_component.dart';
+import 'package:automation_test_flutter/modules/common/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -65,8 +67,8 @@ class _FormScreen3State extends State<FormScreen3> {
                       title: const Text('Data de Envio'),
                       subtitle: Text(
                         field.value != null
-                            ? DateFormat('dd/MM/yyyy', 'pt_BR').format(field.value!)
-                            : 'Escolha a data',
+                          ? DateFormat('dd/MM/yyyy', 'pt_BR').format(field.value!)
+                          : 'Escolha a data',
                       ),
                       onTap: () async {
                         final selectedDate = await showDatePicker(
@@ -75,6 +77,27 @@ class _FormScreen3State extends State<FormScreen3> {
                           firstDate: DateTime.now(),
                           lastDate: DateTime(2100),
                           locale: const Locale('pt', 'BR'),
+                          builder: (context, child) {
+                            return Theme(
+                              data: Theme.of(context).copyWith(
+                                colorScheme: const ColorScheme.light(
+                                  primary: ZemaColors.primary, // Cor do botão de seleção e do círculo
+                                  onPrimary: Colors.white, // Cor do texto dentro do círculo
+                                  onSurface: Colors.black, // Cor do texto normal
+                                ),
+                                dialogBackgroundColor: Theme.of(context).dialogBackgroundColor,
+                                textButtonTheme: TextButtonThemeData(
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: Colors.black,
+                                  ),
+                                ),
+                                textTheme: const TextTheme(
+                                  titleLarge: TextStyle(color: Colors.white),
+                                )
+                              ),
+                              child: child!,
+                            );
+                          }
                         );
                         if (selectedDate != null) {
                           field.didChange(selectedDate);
@@ -123,29 +146,21 @@ class _FormScreen3State extends State<FormScreen3> {
                 title: const Text('Gostaria de receber propagandas por e-mail'),
               ),
               const SizedBox(height: 40),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Voltar'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (form.valid) {
-                        final paymentMethod = form.control('paymentMethod').value;
-                        Navigator.pushNamed(
-                          context,
-                          '/form4',
-                          arguments: {'paymentMethod': paymentMethod},
-                        );
-                      } else {
-                        form.markAllAsTouched();
-                      }
-                    },
-                    child: const Text('Avançar para Pagamento'),
-                  ),
-                ],
+              ZemaButtonComponent(
+                label: 'Avançar para Pagamento',
+                buttonName: 'proximo_form3',
+                action: () {
+                  if (form.valid) {
+                    final paymentMethod = form.control('paymentMethod').value;
+                    Navigator.pushNamed(
+                      context,
+                      '/form4',
+                      arguments: {'paymentMethod': paymentMethod},
+                    );
+                  } else {
+                    form.markAllAsTouched();
+                  }
+                },
               ),
             ],
           ),

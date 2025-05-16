@@ -1,3 +1,4 @@
+import 'package:automation_test_flutter/modules/common/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:automation_test_flutter/screens/form_screen1.dart';
@@ -18,10 +19,8 @@ class FormApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Formulário App',
-      theme: ThemeData(
-        primarySwatch: Colors.indigo,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
+      theme: ZemaTheme.getLightTheme(),
+      themeMode: ThemeMode.light,
       locale: const Locale('pt', 'BR'),
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
