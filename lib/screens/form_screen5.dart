@@ -4,28 +4,25 @@ import 'package:automation_test_flutter/constants/constants.dart';
 
 class FormScreen5 extends StatelessWidget {
   final Map<String, dynamic> paymentData;
+
   const FormScreen5({super.key, required this.paymentData});
 
   @override
   Widget build(BuildContext context) {
-    final pixCode = paymentData['pixCode'];
-    final boletoCode = paymentData['boletoCode'];
+    final String? paymentMethod = paymentData['paymentMethod'];
 
-    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
-
-    if (args == null) {
+    if (paymentMethod == null) {
       return const Scaffold(
-        body: Center(child: Text('Dados de pagamento não fornecidos.')),
+        body: Center(
+          child: Text('Dados de pagamento não fornecidos.'),
+        ),
       );
     }
 
-    final paymentMethod = args['paymentMethod'];
-    final cardNumber = args['cardNumber'];
-    final cardExpiry = args['cardExpiry'];
-    final cardType = args['cardType'];
-
     return Scaffold(
-      appBar: AppBar(title: const Text('Confirmação de Pagamento')),
+      appBar: AppBar(
+        title: const Text('Confirmação de Pagamento'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -36,18 +33,9 @@ class FormScreen5 extends StatelessWidget {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
-            Text('Método de pagamento: ${paymentMethod.toString().toUpperCase()}'),
-            if (paymentMethod == card) ...[
-              const SizedBox(height: 10),
-              Text('Número do Cartão: ${cardNumber ?? "Não informado"}'),
-              Text('Validade: ${cardExpiry ?? "Não informado"}'),
-              Text('Tipo do Cartão: ${cardType ?? "Não informado"}'),
-            ] else if (paymentMethod == pix) ...[
-              const SizedBox(height: 10),
-              Text('Código Pix: ${pixCode ?? "Não informado"}'),
-            ] else if (paymentMethod == boleto) ...[
-              Text('Código de Barras: ${boletoCode ?? "Não informado"}'),
-            ],
+            Text('Método de pagamento: ${paymentMethod.toUpperCase()}'),
+            const SizedBox(height: 10),
+            _buildPaymentDetails(paymentMethod),
             const SizedBox(height: 40),
             Center(
               child: ZemaButtonComponent(
@@ -62,5 +50,58 @@ class FormScreen5 extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildPaymentDetails(String method) {
+    switch (method) {
+      case card:
+        return _CardPaymentDetails(paymentData: paymentData);
+      case pix:
+        return _PixPaymentDetails(code: paymentData['pixCode']);
+      case boleto:
+        return _BoletoPaymentDetails(code: paymentData['boletoCode']);
+      default:
+        return const Text('Método de pagamento não reconhecido.');
+    }
+  }
+}
+
+class _CardPaymentDetails extends StatelessWidget {
+  final Map<String, dynamic> paymentData;
+
+  const _CardPaymentDetails({required this.paymentData});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Número do Cartão: ${paymentData['cardNumber'] ?? "Não informado"}'),
+        Text('Validade: ${paymentData['cardExpiry'] ?? "Não informado"}'),
+        Text('Tipo do Cartão: ${paymentData['cardType'] ?? "Não informado"}'),
+      ],
+    );
+  }
+}
+
+class _PixPaymentDetails extends StatelessWidget {
+  final String? code;
+
+  const _PixPaymentDetails({required this.code});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text('Código Pix: ${code ?? "Não informado"}');
+  }
+}
+
+class _BoletoPaymentDetails extends StatelessWidget {
+  final String? code;
+
+  const _BoletoPaymentDetails({required this.code});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text('Código de Barras: ${code ?? "Não informado"}');
   }
 }
