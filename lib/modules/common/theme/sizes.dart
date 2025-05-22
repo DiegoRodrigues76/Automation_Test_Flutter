@@ -1,4 +1,4 @@
-import 'package:automation_test_flutter/modules/common/models/size_model.dart';
+import 'package:automation_test_flutter/data/models/size_model.dart';
 
 class ZemaSizes {
   static SizeModel padding = SizeModel(

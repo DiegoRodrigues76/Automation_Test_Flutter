@@ -3,12 +3,12 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 // Pacotes e módulos do app
 import 'package:automation_test_flutter/modules/common/theme/theme.dart';
-import 'package:automation_test_flutter/screens/form_screen1.dart';
-import 'package:automation_test_flutter/screens/form_screen2.dart';
-import 'package:automation_test_flutter/screens/form_screen3.dart';
-import 'package:automation_test_flutter/screens/form_screen4.dart';
-import 'package:automation_test_flutter/screens/form_screen5.dart';
-import 'package:automation_test_flutter/screens/payment_completed_screen.dart';
+import 'package:automation_test_flutter/presentation/screens/form_screen1.dart';
+import 'package:automation_test_flutter/presentation/screens/form_screen2.dart';
+import 'package:automation_test_flutter/presentation/screens/form_screen3.dart';
+import 'package:automation_test_flutter/presentation/screens/form_screen4.dart';
+import 'package:automation_test_flutter/presentation/screens/form_screen5.dart';
+import 'package:automation_test_flutter/presentation/screens/payment_completed_screen.dart';
 
 void main() {
   runApp(const FormApp());

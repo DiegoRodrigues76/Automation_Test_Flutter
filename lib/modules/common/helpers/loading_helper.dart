@@ -1,4 +1,4 @@
-import 'package:automation_test_flutter/modules/common/components/scaffold_component.dart';
+import 'package:automation_test_flutter/presentation/components/scaffold_component.dart';
 import 'package:automation_test_flutter/modules/common/theme/colors.dart';
 import 'package:flutter/material.dart';
 

@@ -4,7 +4,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 import 'package:automation_test_flutter/constants/constants.dart';
-import 'package:automation_test_flutter/modules/common/components/button_component.dart';
+import 'package:automation_test_flutter/presentation/components/button_component.dart';
 import 'package:automation_test_flutter/modules/common/theme/colors.dart';
 
 class FormScreen3 extends StatefulWidget {

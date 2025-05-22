@@ -1,7 +1,7 @@
 import 'package:automation_test_flutter/modules/common/theme/colors.dart';
 import 'package:automation_test_flutter/modules/common/theme/sizes.dart';
 import 'package:flutter/material.dart';
-import '../components/text_field_component.dart';
+import '../../../presentation/components/text_field_component.dart';
 
 class ZemaTextFieldComponentHelper {
   static TextFieldStyleHelper textFieldStyleHelper =

@@ -1,4 +1,4 @@
-import 'package:automation_test_flutter/modules/common/components/button_component.dart';
+import 'package:automation_test_flutter/presentation/components/button_component.dart';
 import 'package:flutter/material.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
