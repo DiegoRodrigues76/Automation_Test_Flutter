@@ -94,20 +94,24 @@ class _FormScreen3State extends State<FormScreen3> {
                 firstDate: DateTime.now(),
                 lastDate: DateTime(2100),
                 locale: const Locale('pt', 'BR'),
-                builder: (context, child) {
-                  return Theme(
-                    data: Theme.of(context).copyWith(
-                      colorScheme: const ColorScheme.light(
-                        primary: ZemaColors.primary,
-                        onPrimary: Colors.white,
-                        onSurface: Colors.black,
-                      ),
-                      dialogBackgroundColor: Theme.of(context).dialogBackgroundColor,
-                      textButtonTheme: TextButtonThemeData(
-                        style: TextButton.styleFrom(foregroundColor: Colors.black),
-                      ),
-                    ),
-                    child: child!,
+                builder: (BuildContext context, Widget? child) {
+                  return Builder(
+                    builder: (BuildContext innerContext) {
+                      return Theme(
+                        data: Theme.of(innerContext).copyWith(
+                          colorScheme: const ColorScheme.light(
+                            primary: ZemaColors.primary,
+                            onPrimary: Colors.white,
+                            onSurface: Colors.black,
+                          ),
+                          dialogBackgroundColor: Theme.of(innerContext).dialogBackgroundColor,
+                          textButtonTheme: TextButtonThemeData(
+                            style: TextButton.styleFrom(foregroundColor: Colors.black),
+                          ),
+                        ),
+                        child: child!,
+                      );
+                    },
                   );
                 },
               );
