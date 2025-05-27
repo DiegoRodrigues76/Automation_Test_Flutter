@@ -1,3 +1,5 @@
+// lib\modules\common\enums\permission_enum.dart
+
 enum AppPermission {
   notifications,
   camera,

@@ -1,4 +1,3 @@
-// lib/screens/payment_completed_screen.dart
 import 'package:flutter/material.dart';
 
 class PaymentCompletedScreen extends StatelessWidget {
@@ -7,23 +6,21 @@ class PaymentCompletedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Pagamento Concluído'),
-      ),
-      body: Center(  // Centraliza o conteúdo na tela
+      appBar: AppBar(title: const Text('Pagamento Concluído')),
+      body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,  // Centraliza verticalmente
-            crossAxisAlignment: CrossAxisAlignment.center,  // Centraliza horizontalmente
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(
-                Icons.check_circle_outline,  // Ícone de confirmação
+              const Icon(
+                Icons.check_circle_outline,
                 color: Colors.green,
                 size: 80,
               ),
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 'Pagamento Confirmado!',
                 style: TextStyle(
                   fontSize: 24,
@@ -31,13 +28,13 @@ class PaymentCompletedScreen extends StatelessWidget {
                   color: Colors.green,
                 ),
               ),
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 'Seu pagamento foi realizado com sucesso.',
                 style: TextStyle(fontSize: 16),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
             ],
           ),
         ),

@@ -1,29 +1,28 @@
-import 'package:automation_test_flutter/presentation/components/button_component.dart';
+// lib/presentation/screens/form_screen2.dart
 import 'package:flutter/material.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:dropdown_search/dropdown_search.dart';
-
-import 'package:automation_test_flutter/services/api_service.dart';
-import 'package:automation_test_flutter/constants/constants.dart';
+import 'package:automation_test_flutter/domain/usecases/fetch_address_usecase.dart';
+import 'package:automation_test_flutter/domain/usecases/create_address_usecase.dart';
+import 'package:automation_test_flutter/presentation/components/button_component.dart';
 import 'package:automation_test_flutter/widgets/form_fields.dart';
 
 class FormScreen2 extends StatefulWidget {
-  const FormScreen2({super.key});
+  final FetchAddressUseCase fetchAddressUseCase;
+  final CreateAddressUseCase createAddressUseCase;
+
+  const FormScreen2({
+    super.key,
+    required this.fetchAddressUseCase,
+    required this.createAddressUseCase,
+  });
 
   @override
   _FormScreen2State createState() => _FormScreen2State();
 }
 
 class _FormScreen2State extends State<FormScreen2> {
-  final form = FormGroup({
-    'country': FormControl<String>(validators: [Validators.required]),
-    'cep': FormControl<String>(validators: [Validators.required]),
-    'street': FormControl<String>(validators: [Validators.required]),
-    'neighborhood': FormControl<String>(validators: [Validators.required]),
-    'city': FormControl<String>(validators: [Validators.required]),
-    'state': FormControl<String>(validators: [Validators.required]),
-  });
-
+  final form = CreateAddressUseCase().execute();
   bool _shouldShowAddress = false;
 
   @override
@@ -36,42 +35,43 @@ class _FormScreen2State extends State<FormScreen2> {
           formGroup: form,
           child: Column(
             children: [
-              _buildCountryDropdown(),
+              DropdownSearch<String>(
+                asyncItems: (_) => widget.fetchAddressUseCase.repository.fetchCountries(),
+                selectedItem: form.control('country').value,
+                onChanged: (value) => form.control('country').value = value,
+                dropdownDecoratorProps: const DropDownDecoratorProps(
+                  dropdownSearchDecoration: InputDecoration(
+                    labelText: 'Nacionalidade',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
               const SizedBox(height: 16),
-              _buildCepField(),
+              CustomReactiveTextField(
+                formControlName: 'cep',
+                label: 'CEP',
+                keyboardType: TextInputType.number,
+                onChanged: (_) => _handleCepChanged(),
+                validationMessages: widget.createAddressUseCase.validationMessages(),
+              ),
               if (_shouldShowAddress) _buildAddressFields(),
               const SizedBox(height: 20),
-              _buildNextButton(),
+              ZemaButtonComponent(
+                label: 'Próximo',
+                buttonName: 'proximo_form2',
+                action: () {
+                  if (form.valid) {
+                    final address = widget.createAddressUseCase.toEntity(form);
+                    Navigator.pushNamed(context, '/form3', arguments: address);
+                  } else {
+                    form.markAllAsTouched();
+                  }
+                },
+              ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildCountryDropdown() {
-    return DropdownSearch<String>(
-      asyncItems: (_) => ApiService.fetchCountries(),
-      selectedItem: form.control('country').value,
-      onChanged: (value) => form.control('country').value = value,
-      dropdownDecoratorProps: const DropDownDecoratorProps(
-        dropdownSearchDecoration: InputDecoration(
-          labelText: 'Nacionalidade',
-          border: OutlineInputBorder(),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCepField() {
-    return CustomReactiveTextField(
-      formControlName: 'cep',
-      label: 'CEP',
-      keyboardType: TextInputType.number,
-      onChanged: (_) => _handleCepChanged(),
-      validationMessages: {
-        ValidationMessage.required: (_) => requiredField,
-      },
     );
   }
 
@@ -103,46 +103,25 @@ class _FormScreen2State extends State<FormScreen2> {
     );
   }
 
-  Widget _buildNextButton() {
-    return ZemaButtonComponent(
-      label: 'Próximo',
-      buttonName: 'proximo_form2',
-      action: () {
-        if (form.valid) {
-          Navigator.pushNamed(context, '/form3');
-        } else {
-          form.markAllAsTouched();
-        }
-      },
-    );
-  }
-
   Future<void> _handleCepChanged() async {
     final cep = form.control('cep').value;
-    if (cep == null || cep.length < 8) {
+    if (cep == null || cep.replaceAll(RegExp(r'[^0-9]'), '').length != 8) {
       setState(() => _shouldShowAddress = false);
       return;
     }
 
-    final address = await ApiService.fetchAddress(cep);
+    final address = await widget.fetchAddressUseCase.execute(cep);
     if (address != null) {
-      form.control('street').value = address['logradouro'];
-      form.control('neighborhood').value = address['bairro'];
-      form.control('city').value = address['localidade'];
-      form.control('state').value = address['uf'];
+      widget.createAddressUseCase.updateAddress(form, address);
       setState(() => _shouldShowAddress = true);
     } else {
       setState(() => _shouldShowAddress = false);
-      _showInvalidCepSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('CEP inválido!'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
-  }
-
-  void _showInvalidCepSnackBar() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('CEP inválido!'),
-        backgroundColor: Colors.red,
-      ),
-    );
   }
 }

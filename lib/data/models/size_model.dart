@@ -1,3 +1,5 @@
+// lib/data/models/size_model.dart
+
 class SizeModel {
   SizeModel({
     required this.medium,
