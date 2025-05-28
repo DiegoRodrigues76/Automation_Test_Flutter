@@ -40,6 +40,8 @@ dependencies:
     sdk: flutter
   rxdart: ^0.28.0
   skeletonizer: ^1.4.3
+  logger: ^2.4.0
+  path_provider: ^2.1.5
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -49,8 +51,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  # reactive_forms: ^17.0.1
   reactive_forms: ^17.0.1
+  mockito: ^5.4.4
   integration_test:
     sdk: flutter
 
