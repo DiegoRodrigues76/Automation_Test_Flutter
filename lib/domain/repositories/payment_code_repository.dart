@@ -1,4 +1,3 @@
 abstract class PaymentCodeRepository {
-  String generatePixCode();
-  String generateBoletoCode();
+  Future<String> generateCode(String paymentMethod);
 }

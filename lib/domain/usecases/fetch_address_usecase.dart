@@ -7,7 +7,7 @@ class FetchAddressUseCase {
 
   FetchAddressUseCase(this.repository);
 
-  Future<Address?> execute(String cep) async {
+  Future<AddressEntity?> execute(String cep) async {
     return repository.fetchAddress(cep);
   }
 }

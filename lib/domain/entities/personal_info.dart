@@ -1,11 +1,19 @@
-class PersonalInfo {
+class PersonalInfoEntity {
   final String name;
   final String email;
   final String phone;
 
-  PersonalInfo({
+  PersonalInfoEntity({
     required this.name,
     required this.email,
     required this.phone,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'email': email,
+      'phone': phone,
+    };
+  }
 }

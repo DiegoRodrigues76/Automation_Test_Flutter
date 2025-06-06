@@ -26,8 +26,8 @@ class AddressModel {
     );
   }
 
-  Address toEntity() {
-    return Address(
+  AddressEntity toEntity() {
+    return AddressEntity(
       country: 'Brasil', // Fixed since ViaCEP is Brazil-specific
       cep: cep,
       street: logradouro,

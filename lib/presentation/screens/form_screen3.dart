@@ -1,20 +1,25 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:cross_file/cross_file.dart';
 import 'package:automation_test_flutter/domain/usecases/create_payment_info_usecase.dart';
 import 'package:automation_test_flutter/presentation/components/button_component.dart';
-import 'package:automation_test_flutter/modules/common/theme/colors.dart';
 import 'package:automation_test_flutter/constants/constants.dart';
 import 'package:automation_test_flutter/services/logger_service.dart';
+import 'package:automation_test_flutter/presentation/routes/app_routes.dart';
+import 'package:automation_test_flutter/presentation/routes/form_data_arguments.dart';
 
 class FormScreen3 extends StatefulWidget {
   final CreatePaymentInfoUseCase useCase;
+  final FormDataArguments? arguments;
 
-  const FormScreen3({super.key, required this.useCase});
+  const FormScreen3({
+    super.key,
+    required this.useCase,
+    this.arguments,
+  });
 
   @override
   _FormScreen3State createState() => _FormScreen3State();
@@ -22,6 +27,13 @@ class FormScreen3 extends StatefulWidget {
 
 class _FormScreen3State extends State<FormScreen3> {
   final _screenshotController = ScreenshotController();
+
+  @override
+  void initState() {
+    super.initState();
+    LoggerService.debug('Personal Info: ${widget.arguments?.personalInfo}');
+    LoggerService.debug('Address: ${widget.arguments?.address}');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +78,15 @@ class _FormScreen3State extends State<FormScreen3> {
                       action: () {
                         if (form.valid) {
                           final paymentInfo = widget.useCase.toEntity(form);
-                          Navigator.pushNamed(context, '/form4', arguments: paymentInfo);
+                          Navigator.pushNamed(
+                            context,
+                            AppRoutes.form4,
+                            arguments: FormDataArguments(
+                              personalInfo: widget.arguments?.personalInfo,
+                              address: widget.arguments?.address,
+                              paymentInfo: paymentInfo,
+                            ),
+                          );
                         } else {
                           form.markAllAsTouched();
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -119,7 +139,7 @@ class _FormScreen3State extends State<FormScreen3> {
                   return Theme(
                     data: Theme.of(context).copyWith(
                       colorScheme: const ColorScheme.light(
-                        primary: ZemaColors.primary,
+                        primary: Colors.blue,
                         onPrimary: Colors.white,
                         onSurface: Colors.black,
                       ),
@@ -172,22 +192,35 @@ class _FormScreen3State extends State<FormScreen3> {
   Future<void> _captureAndShareScreenshot() async {
     try {
       final image = await _screenshotController.capture();
-      if (image != null) {
-        final directory = await getTemporaryDirectory();
-        final imagePath = '${directory.path}/form3_screenshot_${DateTime.now().millisecondsSinceEpoch}.png';
-        final file = File(imagePath);
-        await file.writeAsBytes(image);
-        LoggerService.info('Screenshot temporária salva em: $imagePath');
-        await Share.shareXFiles([XFile(imagePath)], text: 'Captura de tela do Formulário 3');
+      if (image == null) {
+        throw Exception('Falha ao capturar a imagem');
+      }
+
+      await Share.shareXFiles(
+        [
+          XFile.fromData(
+            image,
+            name: 'form3_screenshot_${DateTime.now().millisecondsSinceEpoch}.png',
+            mimeType: 'image/png',
+          ),
+        ],
+        text: 'Captura de tela do Formulário 3',
+      );
+
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Screenshot pronta para compartilhamento')),
         );
       }
     } catch (e, stackTrace) {
-      LoggerService.error('Erro ao capturar ou compartilhar screenshot', e, stackTrace);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Erro ao capturar ou compartilhar screenshot')),
-      );
+      LoggerService.error('Erro ao capturar ou compartilhar screenshot: $e', e, stackTrace);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao capturar ou compartilhar screenshot: ${e.toString()}'),
+          ),
+        );
+      }
     }
   }
 }

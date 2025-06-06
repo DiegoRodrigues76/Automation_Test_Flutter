@@ -4,19 +4,26 @@ import 'package:automation_test_flutter/constants/constants.dart';
 
 class CreatePaymentDetailsUseCase {
   FormGroup execute(String paymentMethod) {
-    return FormGroup({
-      'paymentMethod': FormControl<String>(value: paymentMethod),
-      'cardType': FormControl<String>(validators: [Validators.required]),
-      'cardNumber': FormControl<String>(validators: [
-        Validators.required,
-        Validators.minLength(16),
-      ]),
-      'cardExpiry': FormControl<DateTime>(validators: [Validators.required]),
-      'cardCVV': FormControl<String>(validators: [
-        Validators.required,
-        Validators.minLength(3),
-      ]),
-    });
+    if (paymentMethod.toLowerCase() == 'credit card') {
+      return FormGroup({
+        'paymentMethod': FormControl<String>(value: paymentMethod),
+        'cardType': FormControl<String>(validators: [Validators.required]),
+        'cardNumber': FormControl<String>(validators: [
+          Validators.required,
+          Validators.minLength(16),
+        ]),
+        'cardExpiry': FormControl<DateTime>(validators: [Validators.required]),
+        'cardCVV': FormControl<String>(validators: [
+          Validators.required,
+          Validators.minLength(3),
+        ]),
+      });
+    } else {
+      return FormGroup({
+        'paymentMethod': FormControl<String>(value: paymentMethod),
+        'code': FormControl<String>(validators: [Validators.required]),
+      });
+    }
   }
 
   Map<String, String Function(Object)> validationMessages(String field) {
@@ -35,20 +42,22 @@ class CreatePaymentDetailsUseCase {
           ValidationMessage.required: (_) => requiredField,
           ValidationMessage.minLength: (_) => cardCVVMinLength,
         };
+      case 'code':
+        return {ValidationMessage.required: (_) => requiredField};
       default:
         return {};
     }
   }
 
-  PaymentDetails toEntity(FormGroup form, {String? pixCode, String? boletoCode}) {
+  PaymentDetails toEntity(FormGroup form, String paymentMethod) {
     return PaymentDetails(
-      paymentMethod: form.control('paymentMethod').value ?? '',
-      cardType: form.control('cardType').value,
-      cardNumber: form.control('cardNumber').value,
-      cardExpiry: form.control('cardExpiry').value,
-      cardCVV: form.control('cardCVV').value,
-      pixCode: pixCode,
-      boletoCode: boletoCode,
+      paymentMethod: paymentMethod,
+      cardType: form.control('cardType').value as String?,
+      cardNumber: form.control('cardNumber').value as String? ?? form.control('code').value as String?,
+      cardExpiry: form.control('cardExpiry').value as DateTime?,
+      cardCVV: form.control('cardCVV').value as String?,
+      pixCode: paymentMethod.toLowerCase() == 'pix' ? form.control('code').value as String? : null,
+      boletoCode: paymentMethod.toLowerCase() == 'boleto' ? form.control('code').value as String? : null,
     );
   }
 }

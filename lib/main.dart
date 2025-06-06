@@ -1,4 +1,3 @@
-// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:automation_test_flutter/core/config/app_config.dart';
 import 'package:automation_test_flutter/core/di/injection.dart';
@@ -21,7 +20,7 @@ class FormularioApp extends StatelessWidget {
     return MaterialApp(
       title: 'Formulário App',
       theme: AppTheme.lightTheme,
-      initialRoute: AppRoutes.form1,
+      initialRoute: AppRoutes.menu, // Alterado para a rota do MenuScreen
       onGenerateRoute: AppRoutes.onGenerateRoute,
       locale: AppConfig.defaultLocale,
       supportedLocales: AppConfig.supportedLocales,

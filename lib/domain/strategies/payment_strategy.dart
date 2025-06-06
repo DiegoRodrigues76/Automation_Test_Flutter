@@ -4,7 +4,7 @@ import 'package:reactive_forms/reactive_forms.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:automation_test_flutter/widgets/form_fields.dart';
-import 'package:automation_test_flutter/domain/usecases/create_payment_details_usecase.dart';
+// import 'package:automation_test_flutter/domain/usecases/create_payment_details_usecase.dart';
 import 'package:automation_test_flutter/constants/constants.dart';
 
 abstract class PaymentStrategy {
@@ -15,7 +15,6 @@ abstract class PaymentStrategy {
 class CardPaymentStrategy implements PaymentStrategy {
   @override
   Widget buildPaymentWidget(BuildContext context, FormGroup form, Map<String, dynamic> paymentData) {
-    final useCase = CreatePaymentDetailsUseCase();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -25,17 +24,23 @@ class CardPaymentStrategy implements PaymentStrategy {
           formControlName: 'cardNumber',
           label: 'Número do Cartão',
           keyboardType: TextInputType.number,
-          validationMessages: useCase.validationMessages('cardNumber'),
+          validationMessages: {
+            ValidationMessage.required: (_) => cardNumberMinLength,
+            ValidationMessage.minLength: (_) => cardNumberMinLength,
+          },
         ),
         const SizedBox(height: 12),
-        _buildExpiryDateField(form, useCase),
+        _buildExpiryDateField(form),
         const SizedBox(height: 12),
         CustomReactiveTextField(
           formControlName: 'cardCVV',
           label: 'CVV',
           keyboardType: TextInputType.number,
           obscureText: true,
-          validationMessages: useCase.validationMessages('cardCVV'),
+          validationMessages: {
+            ValidationMessage.required: (_) => cardCVVMinLength,
+            ValidationMessage.minLength: (_) => cardCVVMinLength,
+          },
         ),
         const SizedBox(height: 12),
         ReactiveDropdownField<String>(
@@ -45,13 +50,15 @@ class CardPaymentStrategy implements PaymentStrategy {
             DropdownMenuItem(value: 'Crédito', child: Text('Crédito')),
             DropdownMenuItem(value: 'Débito', child: Text('Débito')),
           ],
-          validationMessages: useCase.validationMessages('cardType'),
+          validationMessages: {
+            ValidationMessage.required: (_) => cardTypeRequired,
+          },
         ),
       ],
     );
   }
 
-  Widget _buildExpiryDateField(FormGroup form, CreatePaymentDetailsUseCase useCase) {
+  Widget _buildExpiryDateField(FormGroup form) {
     return ReactiveFormField<DateTime, DateTime>(
       formControlName: 'cardExpiry',
       builder: (field) {
@@ -64,9 +71,7 @@ class CardPaymentStrategy implements PaymentStrategy {
             ),
             isEmpty: field.value == null,
             child: Text(
-              field.value != null
-                  ? DateFormat('MM/yy').format(field.value!)
-                  : '',
+              field.value != null ? DateFormat('MM/yy').format(field.value!) : '',
               style: TextStyle(
                 fontSize: 16,
                 color: field.value != null ? Colors.black : Colors.grey,
@@ -75,7 +80,9 @@ class CardPaymentStrategy implements PaymentStrategy {
           ),
         );
       },
-      validationMessages: useCase.validationMessages('cardExpiry'),
+      validationMessages: {
+        ValidationMessage.required: (_) => cardExpiryRequired,
+      },
     );
   }
 
@@ -142,7 +149,7 @@ class CardPaymentStrategy implements PaymentStrategy {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Número do Cartão: ${paymentData['cardNumber'] ?? "Não informado"}'),
-        Text('Validade: ${paymentData['cardExpiry'] ?? "Não informado"}'),
+        Text('Validade: ${paymentData['cardExpiry'] != null ? DateFormat('MM/yy').format(DateTime.parse(paymentData['cardExpiry'])) : "Não informado"}'),
         Text('Tipo do Cartão: ${paymentData['cardType'] ?? "Não informado"}'),
       ],
     );
@@ -152,7 +159,12 @@ class CardPaymentStrategy implements PaymentStrategy {
 class PixPaymentStrategy implements PaymentStrategy {
   @override
   Widget buildPaymentWidget(BuildContext context, FormGroup form, Map<String, dynamic> paymentData) {
-    return Center(child: QrImageView(data: paymentData['pixCode'], size: 200));
+    return Center(
+      child: QrImageView(
+        data: paymentData['pixCode'] ?? '',
+        size: 200,
+      ),
+    );
   }
 
   @override
@@ -166,7 +178,7 @@ class BoletoPaymentStrategy implements PaymentStrategy {
   Widget buildPaymentWidget(BuildContext context, FormGroup form, Map<String, dynamic> paymentData) {
     return Center(
       child: BarcodeWidget(
-        data: paymentData['boletoCode'],
+        data: paymentData['boletoCode'] ?? '',
         barcode: Barcode.code128(),
         width: 200,
         height: 80,
@@ -182,15 +194,15 @@ class BoletoPaymentStrategy implements PaymentStrategy {
 
 class PaymentStrategyFactory {
   static PaymentStrategy getStrategy(String paymentMethod) {
-    switch (paymentMethod) {
-      case card:
+    switch (paymentMethod.toLowerCase()) {
+      case 'credit card':
         return CardPaymentStrategy();
-      case pix:
+      case 'pix':
         return PixPaymentStrategy();
-      case boleto:
+      case 'boleto':
         return BoletoPaymentStrategy();
       default:
-        throw Exception('Método de pagamento não suportado');
+        throw Exception('Método de pagamento não suportado: $paymentMethod');
     }
   }
 }

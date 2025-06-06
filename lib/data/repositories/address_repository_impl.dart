@@ -15,7 +15,7 @@ class AddressRepositoryImpl implements AddressRepository {
   }
 
   @override
-  Future<Address?> fetchAddress(String cep) async {
+  Future<AddressEntity?> fetchAddress(String cep) async {
     final data = await dataSource.fetchAddress(cep);
     if (data == null) return null;
     return AddressModel.fromJson(data).toEntity();

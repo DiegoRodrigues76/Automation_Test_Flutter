@@ -1,4 +1,3 @@
-// lib/domain/usecases/create_payment_info_usecase.dart
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:automation_test_flutter/domain/entities/payment_info.dart';
 import 'package:automation_test_flutter/constants/constants.dart';
@@ -34,10 +33,18 @@ class CreatePaymentInfoUseCase {
 
   PaymentInfo toEntity(FormGroup form) {
     return PaymentInfo(
-      paymentMethod: form.control('paymentMethod').value ?? '',
-      deliveryDate: form.control('deliveryDate').value ?? DateTime.now(),
-      receiveEmails: form.control('receiveEmails').value ?? false,
-      agreeToTerms: form.control('agreeToTerms').value ?? false,
+      paymentMethod: form.control('paymentMethod').value as String? ?? '',
+      deliveryDate: form.control('deliveryDate').value as DateTime?,
+      termsAccepted: form.control('agreeToTerms').value as bool? ?? false,
     );
   }
 }
+//   PaymentInfo toEntity(FormGroup form) {
+//     return PaymentInfo(
+//       paymentMethod: form.control('paymentMethod').value ?? '',
+//       deliveryDate: form.control('deliveryDate').value ?? DateTime.now(),
+//       receiveEmails: form.control('receiveEmails').value ?? false,
+//       agreeToTerms: form.control('agreeToTerms').value ?? false,
+//     );
+//   }
+// }

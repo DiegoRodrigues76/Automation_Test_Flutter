@@ -3,14 +3,19 @@ import 'package:automation_test_flutter/domain/repositories/payment_code_reposit
 
 class PaymentCodeRepositoryImpl implements PaymentCodeRepository {
   @override
-  String generatePixCode() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    final rand = Random();
-    return List.generate(32, (_) => chars[rand.nextInt(chars.length)]).join();
-  }
-
-  @override
-  String generateBoletoCode() {
-    return List.generate(48, (_) => Random().nextInt(10).toString()).join();
+  Future<String> generateCode(String paymentMethod) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final random = Random();
+    final code = List.generate(10, (_) => random.nextInt(10)).join();
+    switch (paymentMethod.toLowerCase()) {
+      case 'pix':
+        return 'PIX-$code';
+      case 'boleto':
+        return 'BOL-$code';
+      case 'credit card':
+        return 'CC-$code';
+      default:
+        throw Exception('Método de pagamento não suportado: $paymentMethod');
+    }
   }
 }

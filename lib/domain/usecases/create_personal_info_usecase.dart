@@ -1,21 +1,19 @@
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:automation_test_flutter/domain/entities/personal_info.dart';
-import 'package:automation_test_flutter/constants/constants.dart';
 
 class CreatePersonalInfoUseCase {
   FormGroup execute() {
     return FormGroup({
       'name': FormControl<String>(
         validators: [Validators.required],
-        asyncValidatorsDebounceTime: 500,
       ),
       'email': FormControl<String>(
         validators: [Validators.required, Validators.email],
-        asyncValidatorsDebounceTime: 500,
       ),
       'phone': FormControl<String>(
-        validators: [Validators.required],
-        asyncValidatorsDebounceTime: 500,
+        validators: [
+          Validators.required,
+        ],
       ),
     });
   }
@@ -23,23 +21,29 @@ class CreatePersonalInfoUseCase {
   Map<String, String Function(Object)> validationMessages(String field) {
     switch (field) {
       case 'name':
-      case 'phone':
-        return {ValidationMessage.required: (_) => requiredField};
+        return {
+          ValidationMessage.required: (error) => 'Nome é obrigatório',
+        };
       case 'email':
         return {
-          ValidationMessage.required: (_) => requiredField,
-          ValidationMessage.email: (_) => invalidEmail,
+          ValidationMessage.required: (error) => 'E-mail é obrigatório',
+          ValidationMessage.email: (error) => 'Formato de e-mail inválido',
+        };
+      case 'phone':
+        return {
+          ValidationMessage.required: (error) => 'Telefone é obrigatório',
+          'pattern': (error) => 'Formato de telefone inválido (ex: (11) 91234-5678)',
         };
       default:
         return {};
     }
   }
 
-  PersonalInfo toEntity(FormGroup form) {
-    return PersonalInfo(
-      name: form.control('name').value ?? '',
-      email: form.control('email').value ?? '',
-      phone: form.control('phone').value ?? '',
+  PersonalInfoEntity toEntity(FormGroup form) {
+    return PersonalInfoEntity(
+      name: form.control('name').value as String,
+      email: form.control('email').value as String,
+      phone: form.control('phone').value as String,
     );
   }
 }

@@ -1,14 +1,19 @@
-// lib/domain/entities/payment_info.dart
 class PaymentInfo {
   final String paymentMethod;
-  final DateTime deliveryDate;
-  final bool receiveEmails;
-  final bool agreeToTerms;
+  final DateTime? deliveryDate;
+  final bool termsAccepted;
 
   PaymentInfo({
     required this.paymentMethod,
-    required this.deliveryDate,
-    required this.receiveEmails,
-    required this.agreeToTerms,
+    this.deliveryDate,
+    required this.termsAccepted,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'paymentMethod': paymentMethod,
+      'deliveryDate': deliveryDate?.toIso8601String(),
+      'termsAccepted': termsAccepted,
+    };
+  }
 }
