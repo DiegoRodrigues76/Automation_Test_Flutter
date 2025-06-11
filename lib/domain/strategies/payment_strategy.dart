@@ -4,7 +4,6 @@ import 'package:reactive_forms/reactive_forms.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:automation_test_flutter/widgets/form_fields.dart';
-// import 'package:automation_test_flutter/domain/usecases/create_payment_details_usecase.dart';
 import 'package:automation_test_flutter/constants/constants.dart';
 
 abstract class PaymentStrategy {
@@ -194,12 +193,12 @@ class BoletoPaymentStrategy implements PaymentStrategy {
 
 class PaymentStrategyFactory {
   static PaymentStrategy getStrategy(String paymentMethod) {
-    switch (paymentMethod.toLowerCase()) {
-      case 'credit card':
+    switch (paymentMethod) {
+      case card:
         return CardPaymentStrategy();
-      case 'pix':
+      case pix:
         return PixPaymentStrategy();
-      case 'boleto':
+      case boleto:
         return BoletoPaymentStrategy();
       default:
         throw Exception('Método de pagamento não suportado: $paymentMethod');

@@ -101,9 +101,10 @@ class _FormScreen3State extends State<FormScreen3> {
                   ),
                   const SizedBox(height: 16),
                   Center(
-                    child: ElevatedButton(
-                      onPressed: _captureAndShareScreenshot,
-                      child: const Text('Capturar e Compartilhar Tela'),
+                    child: ZemaButtonComponent(
+                      label: 'Capturar e Compartilhar Tela',
+                      buttonName: 'capture_share_form2',
+                      action: _captureAndShareScreenshot,
                     ),
                   ),
                 ],

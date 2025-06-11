@@ -47,9 +47,10 @@ class _PaymentCompletedScreenState extends State<PaymentCompletedScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _captureAndShareScreenshot,
-                child: const Text('Capturar e Compartilhar Tela'),
+              ZemaButtonComponent(
+                label: 'Capturar e Compartilhar Tela',
+                buttonName: 'capture_share_payment_completed',
+                action: _captureAndShareScreenshot,
               ),
             ],
           ),

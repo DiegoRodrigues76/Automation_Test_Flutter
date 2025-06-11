@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-// import 'package:automation_test_flutter/domain/entities/payment_details.dart';
-// import 'package:automation_test_flutter/domain/entities/payment_info.dart';
 import 'package:automation_test_flutter/domain/usecases/create_address_usecase.dart';
 import 'package:automation_test_flutter/domain/usecases/create_payment_details_usecase.dart';
 import 'package:automation_test_flutter/domain/usecases/create_payment_info_usecase.dart';

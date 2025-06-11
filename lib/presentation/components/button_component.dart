@@ -3,7 +3,7 @@ import 'package:automation_test_flutter/modules/common/theme/sizes.dart';
 import 'package:flutter/material.dart';
 
 const double _loadingSize = 17;
-const double _defaultWidth = 343;
+const double _defaultWidth = 200; // Alterado de 343 para 200
 
 class ZemaButtonComponent extends StatefulWidget {
   final String label;
@@ -46,15 +46,17 @@ class ZemaButtonComponent extends StatefulWidget {
 class _ZemaButtonComponentState extends State<ZemaButtonComponent> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        vertical: ZemaSizes.padding.tiny ?? 0,
-      ),
-      width: widget.isFullWidth ? double.infinity : widget.width,
-      child: Semantics(
-        button: true,
-        label: widget.label,
-        child: widget.isOutlined ? _getOutlinedButton : _getElevatedButton,
+    return Center( // Adicionado para centralizar o botão
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          vertical: ZemaSizes.padding.tiny ?? 0,
+        ),
+        width: widget.isFullWidth ? double.infinity : widget.width,
+        child: Semantics(
+          button: true,
+          label: widget.label,
+          child: widget.isOutlined ? _getOutlinedButton : _getElevatedButton,
+        ),
       ),
     );
   }

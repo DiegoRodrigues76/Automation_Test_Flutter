@@ -39,12 +39,3 @@ class CreatePaymentInfoUseCase {
     );
   }
 }
-//   PaymentInfo toEntity(FormGroup form) {
-//     return PaymentInfo(
-//       paymentMethod: form.control('paymentMethod').value ?? '',
-//       deliveryDate: form.control('deliveryDate').value ?? DateTime.now(),
-//       receiveEmails: form.control('receiveEmails').value ?? false,
-//       agreeToTerms: form.control('agreeToTerms').value ?? false,
-//     );
-//   }
-// }

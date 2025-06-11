@@ -1,3 +1,4 @@
+import 'package:automation_test_flutter/presentation/components/button_component.dart';
 import 'package:flutter/material.dart';
 import 'package:automation_test_flutter/presentation/routes/app_routes.dart';
 
@@ -12,26 +13,20 @@ class MenuScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
-              onPressed: () {
+            ZemaButtonComponent(
+              label: 'Formulários',
+              buttonName: 'formularios_menu',
+              action: () {
                 Navigator.pushNamed(context, AppRoutes.form1);
               },
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                textStyle: const TextStyle(fontSize: 18),
-              ),
-              child: const Text('Formulários'),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
+            ZemaButtonComponent(
+              label: 'Criptomoedas',
+              buttonName: 'criptomoedas_menu',
+              action: () {
                 Navigator.pushNamed(context, AppRoutes.crypto);
               },
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                textStyle: const TextStyle(fontSize: 18),
-              ),
-              child: const Text('Criptomoedas'),
             ),
           ],
         ),

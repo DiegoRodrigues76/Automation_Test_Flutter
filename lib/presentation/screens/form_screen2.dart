@@ -151,9 +151,10 @@ class _FormScreen2State extends State<FormScreen2> {
                   },
                 ),
                 const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: _captureAndShareScreenshot,
-                  child: const Text('Capturar e Compartilhar Tela'),
+                ZemaButtonComponent(
+                  label: 'Capturar e Compartilhar Tela',
+                  buttonName: 'capture_share_form2',
+                  action: _captureAndShareScreenshot,
                 ),
               ],
             ),

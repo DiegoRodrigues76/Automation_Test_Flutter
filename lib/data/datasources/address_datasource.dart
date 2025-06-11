@@ -15,7 +15,7 @@ class AddressDataSourceImpl implements AddressDataSource {
   @override
   Future<List<String>> fetchCountries() async {
     try {
-      final uri = Uri.parse('https://restcountries.com/v3.1/all?fields=name');
+      final uri = Uri.parse('https://restcountries.com/v3.1/all?fields=name,translations');
       LoggerService.debug('Fetching countries from: $uri');
       final response = await client.get(
         uri,
@@ -25,9 +25,14 @@ class AddressDataSourceImpl implements AddressDataSource {
       );
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
-        final countries = data
-            .map((item) => item['name']['common'] as String)
-            .toList()
+        final countries = data.map<String>((item) {
+          if (item.containsKey('translations') && 
+              item['translations'].containsKey('por') && 
+              item['translations']['por'].containsKey('common')) {
+            return item['translations']['por']['common'] as String;
+          }
+          return item['name']['common'] as String; // Fallback para inglês
+        }).toList()
           ..sort();
         LoggerService.debug('Fetched ${countries.length} countries');
         return countries;
