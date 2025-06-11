@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 class CustomReactiveTextField extends StatelessWidget {
@@ -6,10 +7,11 @@ class CustomReactiveTextField extends StatelessWidget {
   final String label;
   final bool readOnly;
   final TextInputType? keyboardType;
-  final bool obscureText; // <- Adicionado aqui
+  final bool obscureText;
   final Map<String, String Function(Object)>? validationMessages;
   final void Function(String)? onChanged;
   final InputDecoration? decoration;
+  final List<TextInputFormatter>? inputFormatters;
 
   const CustomReactiveTextField({
     super.key,
@@ -17,10 +19,11 @@ class CustomReactiveTextField extends StatelessWidget {
     required this.label,
     this.readOnly = false,
     this.keyboardType,
-    this.obscureText = false, // <- Valor padrão
+    this.obscureText = false,
     this.validationMessages,
     this.onChanged,
     this.decoration,
+    this.inputFormatters,
   });
 
   @override
@@ -38,7 +41,8 @@ class CustomReactiveTextField extends StatelessWidget {
           : null,
       readOnly: readOnly,
       keyboardType: keyboardType,
-      obscureText: obscureText, // <- Aplicado aqui
+      obscureText: obscureText,
+      inputFormatters: inputFormatters,
       decoration: decoration ??
           InputDecoration(
             labelText: label,

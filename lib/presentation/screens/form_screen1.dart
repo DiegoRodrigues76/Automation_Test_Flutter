@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
@@ -47,6 +48,7 @@ class _FormScreen1State extends State<FormScreen1> {
                   label: 'Nome',
                   validationMessages: widget.useCase.validationMessages('name'),
                   obscureText: false,
+                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\p{L}\s]', unicode: true))], // Letters and spaces
                   onChanged: (value) {
                     final nameControl = form.control('name');
                     if (nameControl.invalid && nameControl.touched) {
@@ -74,7 +76,8 @@ class _FormScreen1State extends State<FormScreen1> {
                   label: 'Telefone',
                   keyboardType: TextInputType.phone,
                   validationMessages: widget.useCase.validationMessages('phone'),
-                  obscureText: true,
+                  obscureText: false,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   onChanged: (value) {
                     final phoneControl = form.control('phone');
                     if (phoneControl.invalid && phoneControl.touched) {

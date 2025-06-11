@@ -4,7 +4,7 @@ import 'package:automation_test_flutter/domain/repositories/payment_code_reposit
 class PaymentCodeRepositoryImpl implements PaymentCodeRepository {
   @override
   Future<String> generateCode(String paymentMethod) async {
-    await Future.delayed(const Duration(milliseconds: 500)); // Simulate API delay
+    await Future.delayed(const Duration(milliseconds: 500));
     switch (paymentMethod.toLowerCase()) {
       case 'pix':
         return generatePixCode();

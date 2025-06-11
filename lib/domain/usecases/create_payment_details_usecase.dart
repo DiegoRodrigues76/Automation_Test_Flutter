@@ -13,24 +13,29 @@ class CreatePaymentDetailsUseCase {
         'cardNumber': FormControl<String>(validators: [
           Validators.required,
           Validators.minLength(16),
+          Validators.maxLength(16),
           Validators.pattern(r'^\d{16}$'),
         ]),
         'cardExpiry': FormControl<DateTime>(validators: [Validators.required]),
         'cardCVV': FormControl<String>(validators: [
           Validators.required,
           Validators.minLength(3),
+          Validators.maxLength(4),
           Validators.pattern(r'^\d{3,4}$'),
         ]),
       });
       LoggerService.debug('Card form initialized with controls: ${form.controls.keys}');
       return form;
-    } else {
+    } else if (paymentMethod == pix || paymentMethod == boleto) {
       final form = FormGroup({
         'paymentMethod': FormControl<String>(value: paymentMethod),
         'code': FormControl<String>(validators: [Validators.required]),
       });
       LoggerService.debug('Non-card form initialized with controls: ${form.controls.keys}');
       return form;
+    } else {
+      LoggerService.error('Invalid payment method in execute: $paymentMethod');
+      throw Exception('Invalid payment method: $paymentMethod');
     }
   }
 
@@ -42,12 +47,14 @@ class CreatePaymentDetailsUseCase {
           'cardNumber': {
             ValidationMessage.required: (_) => requiredField,
             ValidationMessage.minLength: (_) => cardNumberMinLength,
+            ValidationMessage.maxLength: (_) => cardNumberMaxLength,
             ValidationMessage.pattern: (_) => 'Número do cartão inválido (16 dígitos)',
           },
           'cardExpiry': {ValidationMessage.required: (_) => cardExpiryRequired},
           'cardCVV': {
             ValidationMessage.required: (_) => requiredField,
             ValidationMessage.minLength: (_) => cardCVVMinLength,
+            ValidationMessage.maxLength: (_) => cardCVVMaxLength,
             ValidationMessage.pattern: (_) => 'CVV inválido (3 ou 4 dígitos)',
           },
         };
@@ -74,7 +81,7 @@ class CreatePaymentDetailsUseCase {
       );
       LoggerService.debug('Created PaymentDetails: ${details.toMap()}');
       return details;
-    } else {
+    } else if (paymentMethod == pix || paymentMethod == boleto) {
       final code = form.control('code').value as String?;
       final details = PaymentDetails(
         paymentMethod: paymentMethod,
@@ -88,5 +95,7 @@ class CreatePaymentDetailsUseCase {
       LoggerService.debug('Created PaymentDetails: ${details.toMap()}');
       return details;
     }
+    LoggerService.error('Invalid payment method in toEntity: $paymentMethod');
+    throw Exception('Invalid payment method: $paymentMethod');
   }
 }

@@ -1,3 +1,4 @@
+import 'package:automation_test_flutter/modules/common/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:reactive_forms/reactive_forms.dart';
@@ -140,7 +141,7 @@ class _FormScreen3State extends State<FormScreen3> {
                   return Theme(
                     data: Theme.of(context).copyWith(
                       colorScheme: const ColorScheme.light(
-                        primary: Colors.blue,
+                        primary: ZemaColors.primary,
                         onPrimary: Colors.white,
                         onSurface: Colors.black,
                       ),

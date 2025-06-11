@@ -5,14 +5,21 @@ class CreatePersonalInfoUseCase {
   FormGroup execute() {
     return FormGroup({
       'name': FormControl<String>(
-        validators: [Validators.required],
+        validators: [
+          Validators.required,
+          Validators.pattern(RegExp(r'^[\p{L}\s]+$', unicode: true)),
+        ],
       ),
       'email': FormControl<String>(
-        validators: [Validators.required, Validators.email],
+        validators: [
+          Validators.required,
+          Validators.email,
+        ],
       ),
       'phone': FormControl<String>(
         validators: [
           Validators.required,
+          Validators.pattern(r'^\d+$'),
         ],
       ),
     });
@@ -23,6 +30,7 @@ class CreatePersonalInfoUseCase {
       case 'name':
         return {
           ValidationMessage.required: (error) => 'Nome é obrigatório',
+          ValidationMessage.pattern: (error) => 'Nome deve conter apenas letras e espaços',
         };
       case 'email':
         return {
@@ -32,7 +40,7 @@ class CreatePersonalInfoUseCase {
       case 'phone':
         return {
           ValidationMessage.required: (error) => 'Telefone é obrigatório',
-          'pattern': (error) => 'Formato de telefone inválido (ex: (11) 91234-5678)',
+          ValidationMessage.pattern: (error) => 'Telefone deve conter apenas números',
         };
       default:
         return {};

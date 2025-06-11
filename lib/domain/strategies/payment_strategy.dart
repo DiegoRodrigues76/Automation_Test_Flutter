@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Added for FilteringTextInputFormatter
 import 'package:intl/intl.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -23,9 +24,12 @@ class CardPaymentStrategy implements PaymentStrategy {
           formControlName: 'cardNumber',
           label: 'Número do Cartão',
           keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           validationMessages: {
-            ValidationMessage.required: (_) => cardNumberMinLength,
+            ValidationMessage.required: (_) => requiredField,
             ValidationMessage.minLength: (_) => cardNumberMinLength,
+            ValidationMessage.maxLength: (_) => cardNumberMaxLength,
+            ValidationMessage.pattern: (_) => 'Número do cartão inválido (16 dígitos)',
           },
         ),
         const SizedBox(height: 12),
@@ -36,9 +40,12 @@ class CardPaymentStrategy implements PaymentStrategy {
           label: 'CVV',
           keyboardType: TextInputType.number,
           obscureText: true,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           validationMessages: {
-            ValidationMessage.required: (_) => cardCVVMinLength,
+            ValidationMessage.required: (_) => requiredField,
             ValidationMessage.minLength: (_) => cardCVVMinLength,
+            ValidationMessage.maxLength: (_) => cardCVVMaxLength,
+            ValidationMessage.pattern: (_) => 'CVV inválido (3 ou 4 dígitos)',
           },
         ),
         const SizedBox(height: 12),
