@@ -62,16 +62,31 @@ class CreatePaymentDetailsUseCase {
 
   PaymentDetails toEntity(FormGroup form, String paymentMethod) {
     LoggerService.debug('Converting form to PaymentDetails for paymentMethod: $paymentMethod');
-    final details = PaymentDetails(
-      paymentMethod: paymentMethod,
-      cardType: form.control('cardType').value as String?,
-      cardNumber: form.control('cardNumber').value as String? ?? form.control('code').value as String?,
-      cardExpiry: form.control('cardExpiry').value as DateTime?,
-      cardCVV: form.control('cardCVV').value as String?,
-      pixCode: paymentMethod == pix ? form.control('code').value as String? : null,
-      boletoCode: paymentMethod == boleto ? form.control('code').value as String? : null,
-    );
-    LoggerService.debug('Created PaymentDetails: ${details.toString()}');
-    return details;
+    if (paymentMethod == card) {
+      final details = PaymentDetails(
+        paymentMethod: paymentMethod,
+        cardType: form.control('cardType').value as String?,
+        cardNumber: form.control('cardNumber').value as String?,
+        cardExpiry: form.control('cardExpiry').value as DateTime?,
+        cardCVV: form.control('cardCVV').value as String?,
+        pixCode: null,
+        boletoCode: null,
+      );
+      LoggerService.debug('Created PaymentDetails: ${details.toMap()}');
+      return details;
+    } else {
+      final code = form.control('code').value as String?;
+      final details = PaymentDetails(
+        paymentMethod: paymentMethod,
+        cardType: null,
+        cardNumber: null,
+        cardExpiry: null,
+        cardCVV: null,
+        pixCode: paymentMethod == pix ? code : null,
+        boletoCode: paymentMethod == boleto ? code : null,
+      );
+      LoggerService.debug('Created PaymentDetails: ${details.toMap()}');
+      return details;
+    }
   }
 }

@@ -3,7 +3,7 @@ import 'package:automation_test_flutter/modules/common/theme/sizes.dart';
 import 'package:flutter/material.dart';
 
 const double _loadingSize = 17;
-const double _defaultWidth = 200; // Alterado de 343 para 200
+const double _defaultWidth = 200;
 
 class ZemaButtonComponent extends StatefulWidget {
   final String label;
@@ -11,6 +11,7 @@ class ZemaButtonComponent extends StatefulWidget {
   final bool isOutlined;
   final bool isLoading;
   final bool isDisabled;
+  final bool isEnabled; // Added isEnabled
   final bool isFullWidth;
   final double width;
   final bool isCircularRadius;
@@ -27,6 +28,7 @@ class ZemaButtonComponent extends StatefulWidget {
     this.isLoading = false,
     this.isOutlined = false,
     this.isDisabled = false,
+    this.isEnabled = true, // Default to enabled
     this.isFullWidth = true,
     this.width = _defaultWidth,
     this.isCircularRadius = true,
@@ -44,9 +46,11 @@ class ZemaButtonComponent extends StatefulWidget {
 }
 
 class _ZemaButtonComponentState extends State<ZemaButtonComponent> {
+  bool get _effectiveIsDisabled => widget.isDisabled || !widget.isEnabled;
+
   @override
   Widget build(BuildContext context) {
-    return Center( // Adicionado para centralizar o botão
+    return Center(
       child: Container(
         padding: EdgeInsets.symmetric(
           vertical: ZemaSizes.padding.tiny ?? 0,
@@ -62,7 +66,7 @@ class _ZemaButtonComponentState extends State<ZemaButtonComponent> {
   }
 
   Color get _getLabelColor {
-    if (widget.isDisabled) {
+    if (_effectiveIsDisabled) {
       return ZemaColors.disableGray;
     }
     return widget.isOutlined
@@ -135,7 +139,7 @@ class _ZemaButtonComponentState extends State<ZemaButtonComponent> {
   ElevatedButton get _getElevatedButton {
     return ElevatedButton(
       key: Key(widget.buttonName),
-      onPressed: (widget.isDisabled || widget.isLoading)
+      onPressed: (_effectiveIsDisabled || widget.isLoading)
           ? null
           : widget.action,
       style: ElevatedButton.styleFrom(
@@ -144,7 +148,7 @@ class _ZemaButtonComponentState extends State<ZemaButtonComponent> {
         elevation: 0,
         shadowColor: Colors.transparent,
         backgroundColor:
-            widget.isDisabled ? ZemaColors.lightGrey : widget.backgroundColor,
+            _effectiveIsDisabled ? ZemaColors.lightGrey : widget.backgroundColor,
       ),
       child: _getButtonContent,
     );
@@ -153,16 +157,16 @@ class _ZemaButtonComponentState extends State<ZemaButtonComponent> {
   OutlinedButton get _getOutlinedButton {
     return OutlinedButton(
       key: Key(widget.buttonName),
-      onPressed: (widget.isDisabled || widget.isLoading)
+      onPressed: (_effectiveIsDisabled || widget.isLoading)
           ? null
           : widget.action,
       style: OutlinedButton.styleFrom(
         backgroundColor:
-            widget.isDisabled ? ZemaColors.lightGrey : widget.backgroundColor,
+            _effectiveIsDisabled ? ZemaColors.lightGrey : widget.backgroundColor,
         foregroundColor: widget.outlinedBorderColor.withAlpha(252),
         padding: _getPadding,
         side: BorderSide(
-          color: widget.isDisabled
+          color: _effectiveIsDisabled
               ? ZemaColors.accentGray
               : widget.outlinedBorderColor,
         ),

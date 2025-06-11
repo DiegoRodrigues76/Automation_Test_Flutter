@@ -38,6 +38,8 @@ class _FormScreen4State extends State<FormScreen4> {
   bool _isLoading = false;
   String? _errorMessage;
   PaymentStrategy? _paymentStrategy;
+  bool _codeGenerated = false;
+  String? _generatedCode;
 
   @override
   void initState() {
@@ -53,6 +55,17 @@ class _FormScreen4State extends State<FormScreen4> {
           }
         }
         LoggerService.debug('Card form controls validated: ${form.controls.keys}');
+      } else {
+        if (!form.controls.containsKey('code')) {
+          throw Exception('Form control missing: code');
+        }
+        form.control('code').valueChanges.listen((value) {
+          setState(() {
+            _generatedCode = value?.toString();
+            _codeGenerated = _generatedCode != null && _generatedCode!.isNotEmpty;
+          });
+        });
+        LoggerService.debug('Non-card form controls validated: ${form.controls.keys}');
       }
       LoggerService.debug(
         'FormScreen4 initialized with personalInfo: ${widget.arguments?.personalInfo ?? 'none'}, '
@@ -101,13 +114,27 @@ class _FormScreen4State extends State<FormScreen4> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (widget.paymentInfo.paymentMethod == card)
-                  _paymentStrategy!.buildPaymentWidget(context, form, widget.useCase.validationMessages('card'))
+                  _paymentStrategy!.buildPaymentWidget(
+                    context,
+                    form,
+                    widget.useCase.validationMessages('card'),
+                  )
                 else ...[
+                  _paymentStrategy!.buildPaymentWidget(
+                    context,
+                    form,
+                    {
+                      'pixCode': _generatedCode,
+                      'boletoCode': _generatedCode,
+                    },
+                  ),
+                  const SizedBox(height: 12),
                   CustomReactiveTextField(
                     formControlName: 'code',
                     label: 'Código de Pagamento',
                     keyboardType: TextInputType.text,
                     obscureText: false,
+                    readOnly: true,
                     validationMessages: widget.useCase.validationMessages('code')['code']!,
                     onChanged: (value) {
                       final codeControl = form.control('code');
@@ -115,6 +142,11 @@ class _FormScreen4State extends State<FormScreen4> {
                         LoggerService.debug('Code validation errors: ${codeControl.errors}');
                       }
                     },
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Clique em "Gerar Código" para obter o código de pagamento.',
+                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
                   ),
                   const SizedBox(height: 20),
                   Center(
@@ -132,20 +164,21 @@ class _FormScreen4State extends State<FormScreen4> {
                   child: ZemaButtonComponent(
                     label: 'Próximo',
                     buttonName: 'proximo_form4',
+                    isEnabled: widget.paymentInfo.paymentMethod == card || _codeGenerated,
                     action: () {
                       if (form.valid) {
                         final paymentDetails = widget.useCase.toEntity(
                           form,
                           widget.paymentInfo.paymentMethod,
                         );
-                        LoggerService.debug('Navigating to FormScreen5 with paymentDetails: ${paymentDetails.toString()}');
+                        LoggerService.debug('Navigating to FormScreen5 with paymentDetails: ${paymentDetails.toMap()}');
                         Navigator.pushNamed(
                           context,
                           AppRoutes.form5,
                           arguments: FormDataArguments(
                             personalInfo: widget.arguments?.personalInfo,
                             address: widget.arguments?.address,
-                            paymentInfo: widget.arguments?.paymentInfo,
+                            paymentInfo: widget.paymentInfo,
                             paymentDetails: paymentDetails,
                           ),
                         );
@@ -153,8 +186,12 @@ class _FormScreen4State extends State<FormScreen4> {
                         form.markAllAsTouched();
                         LoggerService.debug('Form invalid: ${form.errors}');
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Por favor, preencha todos os campos corretamente.'),
+                          SnackBar(
+                            content: Text(
+                              widget.paymentInfo.paymentMethod == card
+                                ? 'Por favor, preencha os campos do cartão corretamente.'
+                                : 'Por favor, gere o código antes de prosseguir.',
+                            ),
                             backgroundColor: Colors.red,
                           ),
                         );
@@ -183,7 +220,17 @@ class _FormScreen4State extends State<FormScreen4> {
     try {
       final code = await widget.codeRepository.generateCode(widget.paymentInfo.paymentMethod);
       form.control('code').value = code;
+      setState(() {
+        _generatedCode = code;
+        _codeGenerated = true;
+      });
       LoggerService.debug('Generated code: $code');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Código gerado com sucesso!'),
+          backgroundColor: Colors.green,
+        ),
+      );
     } catch (e, stackTrace) {
       LoggerService.error('Erro ao gerar código: $e', stackTrace);
       ScaffoldMessenger.of(context).showSnackBar(
