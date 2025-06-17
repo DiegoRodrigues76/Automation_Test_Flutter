@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:cross_file/cross_file.dart';
 import 'package:automation_test_flutter/domain/usecases/create_personal_info_usecase.dart';
 import 'package:automation_test_flutter/presentation/components/button_component.dart';
 import 'package:automation_test_flutter/widgets/form_fields.dart';
@@ -46,9 +45,10 @@ class _FormScreen1State extends State<FormScreen1> {
                 CustomReactiveTextField(
                   formControlName: 'name',
                   label: 'Nome',
+                  key: const Key('name_field'),
                   validationMessages: widget.useCase.validationMessages('name'),
                   obscureText: false,
-                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\p{L}\s]', unicode: true))], // Letters and spaces
+                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\p{L}\s]', unicode: true))],
                   onChanged: (value) {
                     final nameControl = form.control('name');
                     if (nameControl.invalid && nameControl.touched) {
@@ -60,6 +60,7 @@ class _FormScreen1State extends State<FormScreen1> {
                 CustomReactiveTextField(
                   formControlName: 'email',
                   label: 'E-mail',
+                  key: const Key('email_field'),
                   keyboardType: TextInputType.emailAddress,
                   validationMessages: widget.useCase.validationMessages('email'),
                   obscureText: false,
@@ -74,6 +75,7 @@ class _FormScreen1State extends State<FormScreen1> {
                 CustomReactiveTextField(
                   formControlName: 'phone',
                   label: 'Telefone',
+                  key: const Key('phone_field'),
                   keyboardType: TextInputType.phone,
                   validationMessages: widget.useCase.validationMessages('phone'),
                   obscureText: false,
@@ -90,6 +92,7 @@ class _FormScreen1State extends State<FormScreen1> {
                   child: ZemaButtonComponent(
                     label: 'Próximo',
                     buttonName: 'proximo_form1',
+                    key: const Key('proximo_form1_button'),
                     action: () {
                       if (form.valid) {
                         final personalInfo = widget.useCase.toEntity(form).toMap();
@@ -110,6 +113,7 @@ class _FormScreen1State extends State<FormScreen1> {
                   child: ZemaButtonComponent(
                     label: 'Capturar e Compartilhar Tela',
                     buttonName: 'capture_share_form1',
+                    key: const Key('capture_share_form1_button'),
                     action: _captureAndShareScreenshot,
                   ),
                 ),

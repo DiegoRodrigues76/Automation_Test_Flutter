@@ -3,7 +3,6 @@ import 'package:reactive_forms/reactive_forms.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:cross_file/cross_file.dart';
 import 'package:automation_test_flutter/domain/usecases/fetch_address_usecase.dart';
 import 'package:automation_test_flutter/domain/usecases/create_address_usecase.dart';
 import 'package:automation_test_flutter/presentation/components/button_component.dart';
@@ -85,6 +84,7 @@ class _FormScreen2State extends State<FormScreen2> {
                           ),
                         ),
                         TextButton(
+                          key: const Key('retry_countries_button'),
                           onPressed: _loadCountries,
                           child: const Text('Retry'),
                         ),
@@ -92,6 +92,7 @@ class _FormScreen2State extends State<FormScreen2> {
                     ),
                   ),
                 DropdownSearch<String>(
+                  key: const Key('country_dropdown'),
                   asyncItems: (_) async => _isLoadingCountries ? [] : _countries,
                   selectedItem: form.control('country').value as String?,
                   onChanged: (value) => form.control('country').value = value,
@@ -111,6 +112,7 @@ class _FormScreen2State extends State<FormScreen2> {
                 CustomReactiveTextField(
                   formControlName: 'cep',
                   label: 'CEP',
+                  key: const Key('cep_field'),
                   keyboardType: TextInputType.number,
                   obscureText: false,
                   onChanged: (value) {
@@ -127,6 +129,7 @@ class _FormScreen2State extends State<FormScreen2> {
                 ZemaButtonComponent(
                   label: 'Próximo',
                   buttonName: 'proximo_form2',
+                  key: const Key('proximo_form2_button'),
                   action: () {
                     if (form.valid) {
                       final address = widget.createAddressUseCase.toEntity(form);
@@ -154,6 +157,7 @@ class _FormScreen2State extends State<FormScreen2> {
                 ZemaButtonComponent(
                   label: 'Capturar e Compartilhar Tela',
                   buttonName: 'capture_share_form2',
+                  key: const Key('capture_share_form2_button'),
                   action: _captureAndShareScreenshot,
                 ),
               ],
@@ -168,20 +172,21 @@ class _FormScreen2State extends State<FormScreen2> {
     return Column(
       children: [
         const SizedBox(height: 16),
-        _buildReadOnlyField('street', 'Rua'),
-        _buildReadOnlyField('neighborhood', 'Bairro'),
-        _buildReadOnlyField('city', 'Cidade'),
-        _buildReadOnlyField('state', 'Estado'),
+        _buildReadOnlyField('street', 'Rua', 'street_field'),
+        _buildReadOnlyField('neighborhood', 'Bairro', 'neighborhood_field'),
+        _buildReadOnlyField('city', 'Cidade', 'city_field'),
+        _buildReadOnlyField('state', 'Estado', 'state_field'),
       ],
     );
   }
 
-  Widget _buildReadOnlyField(String name, String label) {
+  Widget _buildReadOnlyField(String name, String label, String key) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: CustomReactiveTextField(
         formControlName: name,
         label: label,
+        key: Key(key),
         readOnly: true,
         obscureText: false,
         decoration: InputDecoration(

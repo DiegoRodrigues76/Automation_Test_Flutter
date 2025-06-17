@@ -1,1 +1,10 @@
 include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    - avoid_unused_constructor_parameters
+    # - unused_import
+
+analyzer:
+  errors:
+    unused_import: ignore

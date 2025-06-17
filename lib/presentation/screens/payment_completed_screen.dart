@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:cross_file/cross_file.dart';
 import 'package:automation_test_flutter/presentation/components/button_component.dart';
 import 'package:automation_test_flutter/services/logger_service.dart';
 import 'package:automation_test_flutter/presentation/routes/app_routes.dart';
@@ -25,6 +24,7 @@ class _PaymentCompletedScreenState extends State<PaymentCompletedScreen> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            key: const Key('payment_completed_content'), // Added key
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.check_circle, size: 100, color: Colors.green),
@@ -38,6 +38,7 @@ class _PaymentCompletedScreenState extends State<PaymentCompletedScreen> {
               ZemaButtonComponent(
                 label: 'Voltar ao Menu',
                 buttonName: 'voltar_menu',
+                key: const Key('voltar_menu_button'), // Added key
                 action: () {
                   Navigator.pushNamedAndRemoveUntil(
                     context,
@@ -50,6 +51,7 @@ class _PaymentCompletedScreenState extends State<PaymentCompletedScreen> {
               ZemaButtonComponent(
                 label: 'Capturar e Compartilhar Tela',
                 buttonName: 'capture_share_payment_completed',
+                key: const Key('capture_share_payment_completed_button'), // Added key
                 action: _captureAndShareScreenshot,
               ),
             ],
@@ -83,7 +85,7 @@ class _PaymentCompletedScreenState extends State<PaymentCompletedScreen> {
         );
       }
     } catch (e, stackTrace) {
-      LoggerService.error('Erro ao capturar ou compartilhar screenshot: $e', e, stackTrace);
+      LoggerService.error('Erro ao capturar ou compartilhar screenshot: $e', stackTrace);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

@@ -16,6 +16,7 @@ class MenuScreen extends StatelessWidget {
             ZemaButtonComponent(
               label: 'Formulários',
               buttonName: 'formularios_menu',
+              key: const Key('formularios_button'), // Added key
               action: () {
                 Navigator.pushNamed(context, AppRoutes.form1);
               },
@@ -24,6 +25,7 @@ class MenuScreen extends StatelessWidget {
             ZemaButtonComponent(
               label: 'Criptomoedas',
               buttonName: 'criptomoedas_menu',
+              key: const Key('criptomoedas_button'), // Added key for consistency
               action: () {
                 Navigator.pushNamed(context, AppRoutes.crypto);
               },

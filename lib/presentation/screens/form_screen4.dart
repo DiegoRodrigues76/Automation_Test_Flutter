@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:cross_file/cross_file.dart';
 import 'package:automation_test_flutter/domain/entities/payment_info.dart';
 import 'package:automation_test_flutter/domain/usecases/create_payment_details_usecase.dart';
 import 'package:automation_test_flutter/domain/repositories/payment_code_repository.dart';
@@ -84,7 +83,7 @@ class _FormScreen4State extends State<FormScreen4> {
   Widget build(BuildContext context) {
     if (_errorMessage != null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Formulário 4')),
+        appBar: AppBar(title: const Text('Formulário 4', key: Key('form4_title'))),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -94,6 +93,7 @@ class _FormScreen4State extends State<FormScreen4> {
               ZemaButtonComponent(
                 label: 'Voltar',
                 buttonName: 'voltar_form4',
+                key: const Key('voltar_form4_button'),
                 action: () => Navigator.pop(context),
               ),
             ],
@@ -103,7 +103,7 @@ class _FormScreen4State extends State<FormScreen4> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Formulário 4')),
+      appBar: AppBar(title: const Text('Formulário 4', key: Key('form4_title'))),
       body: Screenshot(
         controller: _screenshotController,
         child: Padding(
@@ -113,13 +113,62 @@ class _FormScreen4State extends State<FormScreen4> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (widget.paymentInfo.paymentMethod == card)
-                  _paymentStrategy!.buildPaymentWidget(
-                    context,
-                    form,
-                    widget.useCase.validationMessages('card'),
-                  )
-                else ...[
+                if (widget.paymentInfo.paymentMethod == card) ...[
+                  CustomReactiveTextField(
+                    formControlName: 'cardNumber',
+                    label: 'Número do Cartão',
+                    key: const Key('card_number_field'),
+                    keyboardType: TextInputType.number,
+                    obscureText: true,
+                    validationMessages: widget.useCase.validationMessages('card')['cardNumber'],
+                    onChanged: (value) {
+                      final control = form.control('cardNumber');
+                      if (control.invalid && control.touched) {
+                        LoggerService.debug('Card number errors: ${control.errors}');
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  CustomReactiveTextField(
+                    formControlName: 'cardExpiry',
+                    label: 'Validade do Cartão',
+                    key: const Key('card_expiry_field'),
+                    keyboardType: TextInputType.datetime,
+                    validationMessages: widget.useCase.validationMessages('card')['cardExpiry'],
+                    onChanged: (value) {
+                      final control = form.control('cardExpiry');
+                      if (control.invalid && control.touched) {
+                        LoggerService.debug('Card expiry errors: ${control.errors}');
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  CustomReactiveTextField(
+                    formControlName: 'cardCVV',
+                    label: 'CVV',
+                    key: const Key('card_cvv_field'),
+                    keyboardType: TextInputType.number,
+                    obscureText: true,
+                    validationMessages: widget.useCase.validationMessages('card')['cardCVV'],
+                    onChanged: (value) {
+                      final control = form.control('cardCVV');
+                      if (control.invalid && control.touched) {
+                        LoggerService.debug('Card CVV errors: ${control.errors}');
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  ReactiveDropdownField<String>(
+                    formControlName: 'cardType',
+                    key: const Key('card_type_dropdown'),
+                    decoration: const InputDecoration(labelText: 'Tipo de Cartão'),
+                    items: const [
+                      DropdownMenuItem(value: 'credit', child: Text('Crédito')),
+                      DropdownMenuItem(value: 'debit', child: Text('Débito')),
+                    ],
+                    validationMessages: widget.useCase.validationMessages('card')['cardType'],
+                  ),
+                ] else ...[
                   _paymentStrategy!.buildPaymentWidget(
                     context,
                     form,
@@ -132,14 +181,15 @@ class _FormScreen4State extends State<FormScreen4> {
                   CustomReactiveTextField(
                     formControlName: 'code',
                     label: 'Código de Pagamento',
+                    key: const Key('payment_code_field'),
                     keyboardType: TextInputType.text,
                     obscureText: false,
                     readOnly: true,
                     validationMessages: widget.useCase.validationMessages('code')['code']!,
                     onChanged: (value) {
-                      final codeControl = form.control('code');
-                      if (codeControl.invalid && codeControl.touched) {
-                        LoggerService.debug('Code validation errors: ${codeControl.errors}');
+                      final control = form.control('code');
+                      if (control.invalid && control.touched) {
+                        LoggerService.debug('Code validation errors: ${control.errors}');
                       }
                     },
                   ),
@@ -155,6 +205,7 @@ class _FormScreen4State extends State<FormScreen4> {
                         : ZemaButtonComponent(
                             label: 'Gerar Código',
                             buttonName: 'gerar_codigo_form4',
+                            key: const Key('gerar_codigo_form4_button'),
                             action: _generateCode,
                           ),
                   ),
@@ -164,6 +215,7 @@ class _FormScreen4State extends State<FormScreen4> {
                   child: ZemaButtonComponent(
                     label: 'Próximo',
                     buttonName: 'proximo_form4',
+                    key: const Key('proximo_form4_button'),
                     isEnabled: widget.paymentInfo.paymentMethod == card || _codeGenerated,
                     action: () {
                       if (form.valid) {
@@ -189,8 +241,8 @@ class _FormScreen4State extends State<FormScreen4> {
                           SnackBar(
                             content: Text(
                               widget.paymentInfo.paymentMethod == card
-                                ? 'Por favor, preencha os campos do cartão corretamente.'
-                                : 'Por favor, gere o código antes de prosseguir.',
+                                  ? 'Por favor, preencha os campos do cartão corretamente.'
+                                  : 'Por favor, gere o código antes de prosseguir.',
                             ),
                             backgroundColor: Colors.red,
                           ),
@@ -204,6 +256,7 @@ class _FormScreen4State extends State<FormScreen4> {
                   child: ZemaButtonComponent(
                     label: 'Capturar e Compartilhar Tela',
                     buttonName: 'capture_share_form4',
+                    key: const Key('capture_share_form4_button'),
                     action: _captureAndShareScreenshot,
                   ),
                 ),
@@ -225,20 +278,25 @@ class _FormScreen4State extends State<FormScreen4> {
         _codeGenerated = true;
       });
       LoggerService.debug('Generated code: $code');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Código gerado com sucesso!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            key: Key('code_generated_snackbar'),
+            content: Text('Código gerado com sucesso!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
     } catch (e, stackTrace) {
       LoggerService.error('Erro ao gerar código: $e', stackTrace);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao gerar código: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao gerar código: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } finally {
       setState(() => _isLoading = false);
     }

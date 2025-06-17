@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:cross_file/cross_file.dart';
 import 'package:automation_test_flutter/domain/usecases/create_payment_info_usecase.dart';
 import 'package:automation_test_flutter/presentation/components/button_component.dart';
 import 'package:automation_test_flutter/constants/constants.dart';
@@ -41,7 +40,7 @@ class _FormScreen3State extends State<FormScreen3> {
     final form = widget.useCase.execute();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Formulário 3')),
+      appBar: AppBar(title: const Text('Formulário 3', key: Key('form3_title'))),
       body: Screenshot(
         controller: _screenshotController,
         child: Padding(
@@ -54,6 +53,7 @@ class _FormScreen3State extends State<FormScreen3> {
                 children: [
                   ReactiveDropdownField<String>(
                     formControlName: 'paymentMethod',
+                    key: const Key('payment_method_dropdown'),
                     decoration: const InputDecoration(labelText: 'Forma de pagamento'),
                     items: const [
                       DropdownMenuItem(value: pix, child: Text('Pix')),
@@ -69,6 +69,7 @@ class _FormScreen3State extends State<FormScreen3> {
                   const SizedBox(height: 20),
                   ReactiveCheckboxListTile(
                     formControlName: 'receiveEmails',
+                    key: const Key('receive_emails_checkbox'),
                     title: const Text('Gostaria de receber propagandas por e-mail'),
                   ),
                   const SizedBox(height: 40),
@@ -76,6 +77,7 @@ class _FormScreen3State extends State<FormScreen3> {
                     child: ZemaButtonComponent(
                       label: 'Avançar para Pagamento',
                       buttonName: 'proximo_form3',
+                      key: const Key('proximo_form3_button'),
                       action: () {
                         if (form.valid) {
                           final paymentInfo = widget.useCase.toEntity(form);
@@ -104,7 +106,8 @@ class _FormScreen3State extends State<FormScreen3> {
                   Center(
                     child: ZemaButtonComponent(
                       label: 'Capturar e Compartilhar Tela',
-                      buttonName: 'capture_share_form2',
+                      buttonName: 'capture_share_form3',
+                      key: const Key('capture_share_form3_button'),
                       action: _captureAndShareScreenshot,
                     ),
                   ),
@@ -120,6 +123,7 @@ class _FormScreen3State extends State<FormScreen3> {
   Widget _buildDeliveryDateField(FormGroup form) {
     return ReactiveFormField<DateTime, DateTime>(
       formControlName: 'deliveryDate',
+      key: const Key('delivery_date_field'),
       builder: (field) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -177,6 +181,7 @@ class _FormScreen3State extends State<FormScreen3> {
       children: [
         ReactiveCheckboxListTile(
           formControlName: 'agreeToTerms',
+          key: const Key('agree_to_terms_checkbox'),
           title: const Text('Li e concordo com os termos e condições'),
         ),
         if (form.control('agreeToTerms').invalid && form.control('agreeToTerms').touched)
@@ -215,7 +220,7 @@ class _FormScreen3State extends State<FormScreen3> {
         );
       }
     } catch (e, stackTrace) {
-      LoggerService.error('Erro ao capturar ou compartilhar screenshot: $e', e, stackTrace);
+      LoggerService.error('Erro ao capturar ou compartilhar screenshot: $e', stackTrace);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

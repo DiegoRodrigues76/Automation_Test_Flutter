@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:cross_file/cross_file.dart';
 import 'package:automation_test_flutter/domain/entities/payment_details.dart';
 import 'package:automation_test_flutter/presentation/components/button_component.dart';
 import 'package:automation_test_flutter/services/logger_service.dart';
@@ -50,6 +49,7 @@ class _FormScreen5State extends State<FormScreen5> {
             children: [
               const Text(
                 'Resumo do Pagamento',
+                key: Key('payment_summary_title'),
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
@@ -71,6 +71,7 @@ class _FormScreen5State extends State<FormScreen5> {
                 child: ZemaButtonComponent(
                   label: 'Confirmar',
                   buttonName: 'confirmar_form5',
+                  key: const Key('confirmar_form5_button'),
                   action: () {
                     Navigator.pushNamed(context, AppRoutes.paymentCompleted);
                   },
@@ -80,7 +81,8 @@ class _FormScreen5State extends State<FormScreen5> {
               Center(
                 child: ZemaButtonComponent(
                   label: 'Capturar e Compartilhar Tela',
-                  buttonName: 'capture_share_form2',
+                  buttonName: 'capture_share_form5',
+                  key: const Key('capture_share_form5_button'),
                   action: _captureAndShareScreenshot,
                 ),
               ),

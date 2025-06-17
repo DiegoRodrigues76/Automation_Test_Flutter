@@ -26,7 +26,7 @@ class AppRoutes {
   static const String paymentCompleted = '/payment_completed';
   static const String crypto = '/crypto';
 
-  static Route<Object> onGenerateRoute(RouteSettings settings) {
+  static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case menu:
         return MaterialPageRoute(builder: (_) => const MenuScreen());
@@ -88,7 +88,7 @@ class AppRoutes {
     }
   }
 
-  static Route<Object> _errorRoute() {
+  static Route<dynamic> _errorRoute() {
     return MaterialPageRoute(
       builder: (_) => const Scaffold(
         body: Center(child: Text('Rota não encontrada')),
