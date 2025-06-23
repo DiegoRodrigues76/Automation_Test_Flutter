@@ -1,17 +1,19 @@
 import 'dart:math';
 import 'package:automation_test_flutter/domain/repositories/payment_code_repository.dart';
+import 'package:automation_test_flutter/constants/constants.dart';
 
 class PaymentCodeRepositoryImpl implements PaymentCodeRepository {
   @override
-  Future<String> generateCode(String paymentMethod) async {
+  Future<String> generateCode(String? paymentMethod) async {
     await Future.delayed(const Duration(milliseconds: 500));
     final random = Random();
     final code = List.generate(10, (_) => random.nextInt(10)).join();
-    switch (paymentMethod.toLowerCase()) {
-      case 'pix':
+    switch (paymentMethod?.toLowerCase()) {
+      case pix:
         return 'PIX-$code';
-      case 'boleto':
+      case boleto:
         return 'BOL-$code';
+      case card:
       case 'credit card':
         return 'CC-$code';
       default:
