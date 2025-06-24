@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
@@ -119,7 +120,7 @@ class _FormScreen4State extends State<FormScreen4> {
                     label: 'Número do Cartão',
                     key: const Key('card_number_field'),
                     keyboardType: TextInputType.number,
-                    obscureText: true,
+                    obscureText: false,
                     validationMessages: widget.useCase.validationMessages('card')['cardNumber'],
                     onChanged: (value) {
                       final control = form.control('cardNumber');
@@ -129,19 +130,7 @@ class _FormScreen4State extends State<FormScreen4> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  CustomReactiveTextField(
-                    formControlName: 'cardExpiry',
-                    label: 'Validade do Cartão',
-                    key: const Key('card_expiry_field'),
-                    keyboardType: TextInputType.datetime,
-                    validationMessages: widget.useCase.validationMessages('card')['cardExpiry'],
-                    onChanged: (value) {
-                      final control = form.control('cardExpiry');
-                      if (control.invalid && control.touched) {
-                        LoggerService.debug('Card expiry errors: ${control.errors}');
-                      }
-                    },
-                  ),
+                  _buildExpiryDateField(),
                   const SizedBox(height: 16),
                   CustomReactiveTextField(
                     formControlName: 'cardCVV',
@@ -266,6 +255,93 @@ class _FormScreen4State extends State<FormScreen4> {
         ),
       ),
     );
+  }
+
+  Widget _buildExpiryDateField() {
+    return ReactiveFormField<DateTime, DateTime>(
+      formControlName: 'cardExpiry',
+      builder: (field) {
+        return GestureDetector(
+          onTap: () => _showMonthYearPicker(context, field),
+          child: InputDecorator(
+            decoration: InputDecoration(
+              labelText: 'Validade do Cartão',
+              errorText: field.errorText,
+              border: const OutlineInputBorder(),
+            ),
+            isEmpty: field.value == null,
+            child: Text(
+              field.value != null ? DateFormat('MM/yy').format(field.value!) : '',
+              style: TextStyle(
+                fontSize: 16,
+                color: field.value != null ? Colors.black : Colors.grey,
+              ),
+            ),
+          ),
+        );
+      },
+      validationMessages: widget.useCase.validationMessages('card')['cardExpiry'],
+    );
+  }
+
+  void _showMonthYearPicker(BuildContext context, ReactiveFormFieldState<DateTime, DateTime> field) async {
+    final now = DateTime.now();
+    int selectedMonth = field.value?.month ?? now.month;
+    int selectedYear = field.value?.year ?? now.year;
+
+    final picked = await showDialog<DateTime>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            content: Row(
+              children: [
+                Expanded(
+                  child: DropdownButton<int>(
+                    value: selectedMonth,
+                    onChanged: (value) => setState(() => selectedMonth = value!),
+                    items: List.generate(12, (index) {
+                      final month = index + 1;
+                      return DropdownMenuItem(
+                        value: month,
+                        child: Text(month.toString().padLeft(2, '0')),
+                      );
+                    }),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: DropdownButton<int>(
+                    value: selectedYear,
+                    onChanged: (value) => setState(() => selectedYear = value!),
+                    items: List.generate(101, (index) {
+                      final year = now.year + index - 50; // Range de 50 anos antes e 50 anos depois
+                      if (year >= 2000 && year <= 2100) {
+                        return DropdownMenuItem(
+                          value: year,
+                          child: Text(year.toString()),
+                        );
+                      }
+                      return null;
+                    }).whereType<DropdownMenuItem<int>>().toList(),
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(DateTime(selectedYear, selectedMonth)),
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    if (picked != null) {
+      field.didChange(picked);
+    }
   }
 
   Future<void> _generateCode() async {
