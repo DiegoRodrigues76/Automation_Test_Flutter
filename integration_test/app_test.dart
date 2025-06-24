@@ -12,11 +12,13 @@ import 'package:reactive_forms/reactive_forms.dart';
 class MockPaymentCodeRepository extends Mock implements PaymentCodeRepository {}
 
 void main() {
-   setUpAll(() async {
-    await GetIt.instance.reset();
-    setupDependencies();
-  });
+
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
+  setUpAll(() async {
+  await GetIt.instance.reset();
+  setupDependencies();
+  });
 
   group('Fluxo de pagamento', () {
     late MockPaymentCodeRepository mockRepository;
@@ -146,20 +148,21 @@ void main() {
       await tester.pumpAndSettle();
       print('Completed FormScreen3');
 
-      // // Preencher dados do cartão na FormScreen4
-      // await tester.enterText(find.byKey(const Key('card_number_field')), '1234567890123456');
-      // await tester.tap(find.byKey(const Key('card_expiry_field')));
-      // await tester.pumpAndSettle();
-      // await tester.tap(find.byType(DropdownButton<int>).at(0)); // Mês
-      // await tester.pumpAndSettle();
-      // await tester.tap(find.text('08').last); // Seleciona Agosto
-      // await tester.pumpAndSettle();
-      // await tester.tap(find.byType(DropdownButton<int>).at(1)); // Ano
-      // await tester.pumpAndSettle();
-      // await tester.tap(find.text('2029').last); // Seleciona 2029
-      // await tester.pumpAndSettle();
-      // await tester.tap(find.text('OK')); // Confirma
-      // await tester.pumpAndSettle();
+      // Preencher dados do cartão na FormScreen4
+      await tester.enterText(find.byKey(const Key('card_number_field')), '1234567890123456');
+      await tester.pumpAndSettle(const Duration(seconds: 2));
+      await tester.tap(find.byKey(const Key('card_expiry_field')));
+      await tester.pumpAndSettle(const Duration(seconds: 5));
+      await tester.tap(find.byType(DropdownButton<int>).at(0)); // Mês
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('08').last); // Seleciona Agosto
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(DropdownButton<int>).at(1)); // Ano
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('2029').last); // Seleciona 2029
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('OK')); // Confirma
+      await tester.pumpAndSettle(const Duration(seconds: 5));
       // await tester.enterText(find.byKey(const Key('card_cvv_field')), '123');
 
       // await tester.tap(find.byKey(const Key('card_type_dropdown')));

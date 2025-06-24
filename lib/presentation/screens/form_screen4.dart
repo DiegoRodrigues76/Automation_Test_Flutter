@@ -260,6 +260,7 @@ class _FormScreen4State extends State<FormScreen4> {
   Widget _buildExpiryDateField() {
     return ReactiveFormField<DateTime, DateTime>(
       formControlName: 'cardExpiry',
+      key: const Key('card_expiry_field'),
       builder: (field) {
         return GestureDetector(
           onTap: () => _showMonthYearPicker(context, field),

@@ -23,6 +23,7 @@ class CardPaymentStrategy implements PaymentStrategy {
         CustomReactiveTextField(
           formControlName: 'cardNumber',
           label: 'Número do Cartão',
+          key: const Key('card_number_field'),
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           validationMessages: {
