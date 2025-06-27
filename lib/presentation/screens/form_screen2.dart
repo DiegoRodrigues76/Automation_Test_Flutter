@@ -70,97 +70,99 @@ class _FormScreen2State extends State<FormScreen2> {
           padding: const EdgeInsets.all(16.0),
           child: ReactiveForm(
             formGroup: form,
-            child: Column(
-              children: [
-                if (_countryError != null)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            _countryError!,
-                            style: const TextStyle(color: Colors.red, fontSize: 12),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  if (_countryError != null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              _countryError!,
+                              style: const TextStyle(color: Colors.red, fontSize: 12),
+                            ),
                           ),
-                        ),
-                        TextButton(
-                          key: const Key('retry_countries_button'),
-                          onPressed: _loadCountries,
-                          child: const Text('Retry'),
-                        ),
-                      ],
+                          TextButton(
+                            key: const Key('retry_countries_button'),
+                            onPressed: _loadCountries,
+                            child: const Text('Retry'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  DropdownSearch<String>(
+                    key: const Key('country_dropdown'),
+                    asyncItems: (_) async => _isLoadingCountries ? [] : _countries,
+                    selectedItem: form.control('country').value as String?,
+                    onChanged: (value) => form.control('country').value = value,
+                    dropdownDecoratorProps: const DropDownDecoratorProps(
+                      dropdownSearchDecoration: InputDecoration(
+                        labelText: 'Nacionalidade',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    popupProps: PopupProps.menu(
+                      showSearchBox: true,
+                      loadingBuilder: (_, __) => const Center(child: CircularProgressIndicator()),
+                      errorBuilder: (_, __, ___) => const Center(child: Text('Error loading countries')),
                     ),
                   ),
-                DropdownSearch<String>(
-                  key: const Key('country_dropdown'),
-                  asyncItems: (_) async => _isLoadingCountries ? [] : _countries,
-                  selectedItem: form.control('country').value as String?,
-                  onChanged: (value) => form.control('country').value = value,
-                  dropdownDecoratorProps: const DropDownDecoratorProps(
-                    dropdownSearchDecoration: InputDecoration(
-                      labelText: 'Nacionalidade',
-                      border: OutlineInputBorder(),
-                    ),
+                  const SizedBox(height: 16),
+                  CustomReactiveTextField(
+                    formControlName: 'cep',
+                    label: 'CEP',
+                    key: const Key('cep_field'),
+                    keyboardType: TextInputType.number,
+                    obscureText: false,
+                    onChanged: (value) {
+                      _handleCepChanged();
+                      final cepControl = form.control('cep');
+                      if (cepControl.invalid && cepControl.touched) {
+                        LoggerService.debug('CEP validation errors: ${cepControl.errors}');
+                      }
+                    },
+                    validationMessages: widget.createAddressUseCase.validationMessages(),
                   ),
-                  popupProps: PopupProps.menu(
-                    showSearchBox: true,
-                    loadingBuilder: (_, __) => const Center(child: CircularProgressIndicator()),
-                    errorBuilder: (_, __, ___) => const Center(child: Text('Error loading countries')),
+                  if (_shouldShowAddress) _buildAddressFields(),
+                  const SizedBox(height: 20),
+                  ZemaButtonComponent(
+                    label: 'Próximo',
+                    buttonName: 'proximo_form2',
+                    key: const Key('proximo_form2_button'),
+                    action: () {
+                      if (form.valid) {
+                        final address = widget.createAddressUseCase.toEntity(form);
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.form3,
+                          arguments: FormDataArguments(
+                            personalInfo: widget.arguments?.personalInfo,
+                            address: address.toMap(),
+                          ),
+                        );
+                      } else {
+                        form.markAllAsTouched();
+                        LoggerService.debug('Form invalid: ${form.errors}');
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Por favor, preencha todos os campos corretamente.'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
                   ),
-                ),
-                const SizedBox(height: 16),
-                CustomReactiveTextField(
-                  formControlName: 'cep',
-                  label: 'CEP',
-                  key: const Key('cep_field'),
-                  keyboardType: TextInputType.number,
-                  obscureText: false,
-                  onChanged: (value) {
-                    _handleCepChanged();
-                    final cepControl = form.control('cep');
-                    if (cepControl.invalid && cepControl.touched) {
-                      LoggerService.debug('CEP validation errors: ${cepControl.errors}');
-                    }
-                  },
-                  validationMessages: widget.createAddressUseCase.validationMessages(),
-                ),
-                if (_shouldShowAddress) _buildAddressFields(),
-                const SizedBox(height: 20),
-                ZemaButtonComponent(
-                  label: 'Próximo',
-                  buttonName: 'proximo_form2',
-                  key: const Key('proximo_form2_button'),
-                  action: () {
-                    if (form.valid) {
-                      final address = widget.createAddressUseCase.toEntity(form);
-                      Navigator.pushNamed(
-                        context,
-                        AppRoutes.form3,
-                        arguments: FormDataArguments(
-                          personalInfo: widget.arguments?.personalInfo,
-                          address: address.toMap(),
-                        ),
-                      );
-                    } else {
-                      form.markAllAsTouched();
-                      LoggerService.debug('Form invalid: ${form.errors}');
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Por favor, preencha todos os campos corretamente.'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  },
-                ),
-                const SizedBox(height: 16),
-                ZemaButtonComponent(
-                  label: 'Capturar e Compartilhar Tela',
-                  buttonName: 'capture_share_form2',
-                  key: const Key('capture_share_form2_button'),
-                  action: _captureAndShareScreenshot,
-                ),
-              ],
+                  const SizedBox(height: 16),
+                  ZemaButtonComponent(
+                    label: 'Capturar e Compartilhar Tela',
+                    buttonName: 'capture_share_form2',
+                    key: const Key('capture_share_form2_button'),
+                    action: _captureAndShareScreenshot,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
